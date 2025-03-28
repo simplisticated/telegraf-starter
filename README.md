@@ -1,2 +1,3 @@
-# telegraf-starter
-Telegram bot starter with Telegraf.js and TypeScript
+# Telegraf.js Starter
+
+Telegram bot starter with Telegraf.js and TypeScript.
