@@ -5,8 +5,8 @@
     "main": "dist/index.js",
     "scripts": {
         "build": "node ./package-scripts/delete-dist-folder.js && tsc -p ./tsconfig.json",
-        "start": "node dist",
-        "start:typescript": "ts-node src",
+        "start": "node ./dist/index.js",
+        "start:dev": "ts-node ./src/index.ts",
         "lint": "eslint . && prettier --check .",
         "lint:fix": "eslint --fix .",
         "format": "prettier --write .",

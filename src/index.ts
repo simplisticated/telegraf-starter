@@ -6,7 +6,7 @@ async function start(): Promise<Telegraf> {
         throw new Error("Telegram token not found");
     }
     const bot = new Telegraf(ENV.TELEGRAM_TOKEN);
-    await bot.launch();
+    bot.launch();
     return bot;
 }
 
