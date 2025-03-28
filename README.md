@@ -49,6 +49,91 @@ Here is an example `.env` file:
 TELEGRAM_TOKEN=1234567890
 ```
 
+## Scripts
+
+The [package.json](./package.json) includes several useful scripts to manage,
+build, and run the project efficiently. Below is a description of each script:
+
+### Build and Run
+
+-   `build`
+
+Deletes the existing `dist` folder and compiles TypeScript files based on the
+`tsconfig.json` configuration.
+
+```
+npm run build
+```
+
+-   `start`
+
+Runs the compiled JavaScript app from the `dist` directory. This should be used
+after running the `build` command.
+
+```
+npm run start
+```
+
+-   `start:dev`
+
+Runs the app in development mode using `ts-node` directly with the TypeScript
+source files. Useful for quick development without building.
+
+```
+npm run start:dev
+```
+
+---
+
+### Linting and Formatting
+
+-   `lint`
+
+Runs ESLint and Prettier to check for code quality and formatting issues.
+
+-   `lint:fix`
+
+Automatically fixes linting issues where possible.
+
+```
+npm run lint:fix
+```
+
+-   `format`
+
+Formats the code using Prettier.
+
+```
+npm run format
+```
+
+---
+
+### Testing
+
+-   `test`
+
+Runs tests using Jest.
+
+```
+npm run test
+```
+
+---
+
+### Combined Checks
+
+-   `check`
+
+Runs a series of checks, including building the project, running lint checks,
+and executing tests.
+
+```
+npm run check
+```
+
+---
+
 ## Contributing
 
 Your input is welcome! If you have any interesting ideas, suggestions, or would
