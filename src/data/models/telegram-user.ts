@@ -58,8 +58,8 @@ export default class TelegramUserModel {
 
     @Column({
         type: "boolean",
-        nullable: true,
+        nullable: false,
         default: false,
     })
-    declare is_premium?: boolean;
+    declare is_premium: boolean;
 }
