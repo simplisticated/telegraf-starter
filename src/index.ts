@@ -1,6 +1,7 @@
 import { Telegraf } from "telegraf";
 import ENV from "./env";
 import MIDDLEWARE_LIST from "./middleware";
+import "reflect-metadata";
 
 async function start(): Promise<Telegraf> {
     if (!ENV.TELEGRAM_TOKEN) {

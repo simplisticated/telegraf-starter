@@ -23,5 +23,5 @@ module.exports = {
         ],
         "@typescript-eslint/no-explicit-any": "off",
     },
-    ignorePatterns: ["dist/", "package-scripts/"],
+    ignorePatterns: ["dist/", "package-scripts/", "*-migration.ts"],
 };

@@ -11,11 +11,19 @@
         "lint:fix": "eslint --fix .",
         "format": "prettier --write .",
         "test": "jest",
-        "check": "npm run build && npm run lint && npm run test"
+        "check": "npm run build && npm run lint && npm run test",
+        "typeorm:ts": "typeorm-ts-node-commonjs",
+        "typeorm:migration:generate": "npm run typeorm:ts migration:generate ./src/data/migrations/migration -- -d ./src/data/store/data-source.ts",
+        "typeorm:migration:create": "npm run typeorm:ts migration:create ./src/data/migrations",
+        "typeorm:migration:run": "npm run typeorm:ts migration:run -- -d ./src/data/store/data-source.ts",
+        "typeorm:migration:revert": "npm run typeorm:ts migration:revert -- -d ./src/data/store/data-source.ts"
     },
     "dependencies": {
         "dotenv": "16.3.1",
-        "telegraf": "4.15.3"
+        "reflect-metadata": "0.1.14",
+        "sqlite3": "5.1.6",
+        "telegraf": "4.15.3",
+        "typeorm": "0.3.17"
     },
     "devDependencies": {
         "@types/jest": "29.5.14",
