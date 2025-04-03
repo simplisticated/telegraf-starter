@@ -11,5 +11,7 @@ export default function handleUser(
         return;
     }
 
+    // Here you can implement sending user information to the backend or database.
+
     next();
 }
