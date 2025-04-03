@@ -1,4 +1,4 @@
-import handleUser from "./users";
+import handleUser from "./handle-user";
 
 const MIDDLEWARE_LIST = [handleUser];
 
