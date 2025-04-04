@@ -1,9 +1,9 @@
 import { Entity, Column, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity({
-    name: "TelegramUser",
+    name: "User",
 })
-export default class TelegramUserModel {
+export default class UserModel {
     @PrimaryGeneratedColumn()
     declare id: number;
 
@@ -62,4 +62,21 @@ export default class TelegramUserModel {
         default: false,
     })
     declare is_premium: boolean;
+
+    @Column({
+        type: "json",
+        nullable: false,
+        default: createEmptyUserState(),
+    })
+    declare state: UserState;
+}
+
+export type UserState = {
+    startCount: number;
+};
+
+function createEmptyUserState(): UserState {
+    return {
+        startCount: 0,
+    };
 }

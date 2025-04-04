@@ -1,5 +1,5 @@
-import TelegramUserModel from "./telegram-user";
+import UserModel from "./user";
 
-const DATABASE_MODELS = [TelegramUserModel];
+const DATABASE_MODELS = [UserModel];
 
 export default DATABASE_MODELS;
