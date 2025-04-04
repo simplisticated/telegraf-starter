@@ -12,10 +12,8 @@ export default async function handleUser(
         return;
     }
 
-    const isNewUser =
-        (await DATABASE.getTelegramUserByTelegramIdentifier(sender.id)) ===
-        null;
-    await DATABASE.createOrUpdateTelegramUser({
+    const isNewUser = (await DATABASE.getUserByTelegramId(sender.id)) === null;
+    await DATABASE.createOrUpdateUser({
         telegram_id: sender.id,
         is_bot: sender.is_bot,
         first_name: sender.first_name,

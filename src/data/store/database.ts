@@ -1,8 +1,8 @@
-import UserModel from "../models/user";
+import UserModel, { UserState } from "../models/user";
 import DATA_SOURCE from "./data-source";
 
 const DATABASE = {
-    async initialize() {
+    async initialize(): Promise<boolean> {
         try {
             await DATA_SOURCE.initialize();
             return true;
@@ -12,13 +12,11 @@ const DATABASE = {
         }
     },
 
-    async getTelegramUserByIdentifier(
-        identifier: number
-    ): Promise<UserModel | null> {
+    async getUserById(id: number): Promise<UserModel | null> {
         try {
             return DATA_SOURCE.getRepository(UserModel).findOne({
                 where: {
-                    id: identifier,
+                    id,
                 },
             });
         } catch (error) {
@@ -27,13 +25,11 @@ const DATABASE = {
         }
     },
 
-    async getTelegramUserByTelegramIdentifier(
-        telegramIdentifier: number
-    ): Promise<UserModel | null> {
+    async getUserByTelegramId(telegramId: number): Promise<UserModel | null> {
         try {
             return DATA_SOURCE.getRepository(UserModel).findOne({
                 where: {
-                    telegram_id: telegramIdentifier,
+                    telegram_id: telegramId,
                 },
             });
         } catch (error) {
@@ -42,26 +38,57 @@ const DATABASE = {
         }
     },
 
-    async createOrUpdateTelegramUser(
+    async createOrUpdateUser(
         data: Partial<UserModel>
     ): Promise<UserModel | null> {
-        if (!data.telegram_id) return null;
-        const existingUser = await this.getTelegramUserByTelegramIdentifier(
-            data.telegram_id
-        );
         try {
-            if (existingUser) {
-                await DATA_SOURCE.getRepository(UserModel).update(
-                    { id: existingUser.id },
-                    { ...data, modification_date: new Date() }
-                );
-                return this.getTelegramUserByIdentifier(existingUser.id);
-            }
-            const user = {
-                ...data,
-                creation_date: new Date(),
-            };
-            return DATA_SOURCE.getRepository(UserModel).save(user);
+            return await DATA_SOURCE.transaction(
+                "SERIALIZABLE",
+                async manager => {
+                    if (!data.telegram_id) {
+                        throw new Error("User should include telegram_id");
+                    }
+                    const repository = manager.getRepository(UserModel);
+                    const existingUser = await this.getUserByTelegramId(
+                        data.telegram_id
+                    );
+                    if (existingUser) {
+                        await repository.update(
+                            { id: existingUser.id },
+                            { ...data, modification_date: new Date() }
+                        );
+                        return this.getUserById(existingUser.id);
+                    }
+                    const user = {
+                        ...data,
+                        creation_date: new Date(),
+                    };
+                    return repository.save(user);
+                }
+            );
+        } catch (error) {
+            console.error(error);
+            return null;
+        }
+    },
+
+    async updateUserState(
+        telegramId: number,
+        handler: (previousState: UserState) => Partial<UserState>
+    ): Promise<UserModel | null> {
+        try {
+            return DATA_SOURCE.transaction("SERIALIZABLE", async manager => {
+                const user = await this.getUserByTelegramId(telegramId);
+                if (!user) return null;
+                const updatedState: UserState = {
+                    ...user.state,
+                    ...handler(user.state),
+                };
+                await manager
+                    .getRepository(UserModel)
+                    .update({ id: user.id }, { state: updatedState });
+                return this.getUserByTelegramId(telegramId);
+            });
         } catch (error) {
             console.error(error);
             return null;
