@@ -179,7 +179,8 @@ const apiUrl = getValueForCurrentEnvironment({
 
 ## User Management
 
-This project uses two main models to manage users:
+This project uses two main models to manage users: [UserModel](#usermodel) and
+[TelegramProfileModel](#telegramprofilemodel).
 
 ### `UserModel`
 
