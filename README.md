@@ -39,6 +39,8 @@ environment, depending on your deployment method.
 Here are the essential environment variables and their purposes:
 
 -   `TELEGRAM_TOKEN`: Specifies the token that is used for Telegram bot.
+-   `APP_ENVIRONMENT`: `production`, `test`, or `local`. See more information
+    [here](#app-environment).
 
 You should create a `.env` file in the root of your project and define these
 variables with their respective values.
@@ -133,6 +135,86 @@ npm run check
 ```
 
 ---
+
+## App Environment
+
+The `AppEnvironment` type defines the environment in which the app is running.
+It allows you to write conditional algorithm based on whether the app is in
+development, testing, or production.
+
+There are three environment types:
+
+-   `production` - the environment used in production deployments;
+-   `test` - internal test environment, similar to `production` but not publicly
+    available;
+-   `local` - local development, where more relaxed rules may apply: logging,
+    test features, etc.
+
+The current environment is defined by the `APP_ENVIRONMENT` value in the `.env`
+file. If the value is not set, it defaults to `local`. You can get the current
+environment value anywhere in the project using `CURRENT_ENVIRONMENT`.
+
+Example usage:
+
+```typescript
+import { AppEnvironment, CURRENT_ENVIRONMENT } from "./app/environment";
+
+if (CURRENT_ENVIRONMENT === AppEnvironment.production) {
+    // The bot is in production mode
+}
+```
+
+You can also define environment-specific values:
+
+```typescript
+import { getValueForCurrentEnvironment } from "./app/environment";
+
+const apiUrl = getValueForCurrentEnvironment({
+    production: "https://api.server.com",
+    test: "https://api-test.server.com",
+    local: "http://localhost:3000",
+});
+```
+
+## User Management
+
+This project uses two main models to manage users:
+
+### `UserModel`
+
+Represents a platform user. Key fields include:
+
+-   `id` - unique user identifier;
+-   `is_administrator` - flag indicating whether the user is an administrator
+    (default is `0`);
+-   `is_blocked` - user block flag (default is `0`).
+
+To make a user an administrator: set `is_administrator = 1` in the database.
+
+To check if the user is administrator, use:
+
+```typescript
+const isAdministrator = await STORE.isAdministrator(telegramId);
+```
+
+To block a user: set `is_blocked = 1` in the database.
+
+To check if the user is blocked, use:
+
+```typescript
+const isBlocked = await STORE.isBlocked(telegramId);
+```
+
+### `TelegramProfileModel`
+
+Associated with `UserModel`, this model stores Telegram-specific data:
+
+-   `telegram_id` - the user’s Telegram ID;
+-   `username` - Telegram username;
+-   other data received from the Telegram Bot API.
+
+The data in `TelegramProfileModel` is automatically updated every time the user
+sends a message, keeping the profile information in the database up to date.
 
 ## Contributing
 
