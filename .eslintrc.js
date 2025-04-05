@@ -32,10 +32,20 @@ module.exports = {
         "dist/",
         "package-scripts/",
         ".eslintrc.js",
+        "jest.config.js",
         "*-migration.ts",
     ],
     parser: "@typescript-eslint/parser",
     parserOptions: {
         project: "./tsconfig.json",
     },
+    overrides: [
+        {
+            files: ["src/data/models/**/*.ts"],
+            excludedFiles: ["src/data/models/index.ts"],
+            rules: {
+                "import/no-cycle": "off",
+            },
+        },
+    ],
 };

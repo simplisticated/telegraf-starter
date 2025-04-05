@@ -1,5 +1,9 @@
+import handleMessageCount from "./handle-message-count";
 import handleUser from "./handle-user";
 
-const MIDDLEWARE_LIST = [handleUser];
+/**
+ * All middleware functions listed here will be performed in the order they appear in this array.
+ */
+const MIDDLEWARE_LIST = [handleUser, handleMessageCount];
 
 export default MIDDLEWARE_LIST;

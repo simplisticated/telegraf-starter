@@ -1,12 +1,9 @@
 export type UserState = {
-    /**
-     * How many times the user used `/start` command.
-     */
-    startCount: number;
+    messageCount: number;
 };
 
 export function createUserState(): UserState {
     return {
-        startCount: 0,
+        messageCount: 0,
     };
 }

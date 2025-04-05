@@ -1,5 +1,12 @@
-import { Entity, Column, PrimaryGeneratedColumn } from "typeorm";
+import {
+    Entity,
+    Column,
+    PrimaryGeneratedColumn,
+    JoinColumn,
+    OneToOne,
+} from "typeorm";
 import { createUserState, UserState } from "../types/user-state";
+import TelegramProfileModel from "./telegram-profile";
 
 @Entity({
     name: "User",
@@ -21,48 +28,18 @@ export default class UserModel {
     modification_date?: Date;
 
     @Column({
-        type: "integer",
-        nullable: false,
-        unique: true,
-    })
-    telegram_id!: number;
-
-    @Column({
         type: "boolean",
         nullable: false,
+        default: false,
     })
-    is_bot!: boolean;
-
-    @Column({
-        type: "text",
-        nullable: false,
-    })
-    first_name!: string;
-
-    @Column({
-        type: "text",
-        nullable: true,
-    })
-    last_name?: string;
-
-    @Column({
-        type: "text",
-        nullable: true,
-    })
-    username?: string;
-
-    @Column({
-        type: "text",
-        nullable: true,
-    })
-    language_code?: string;
+    is_administrator!: boolean;
 
     @Column({
         type: "boolean",
         nullable: false,
         default: false,
     })
-    is_premium!: boolean;
+    is_blocked!: boolean;
 
     @Column({
         type: "json",
@@ -70,4 +47,11 @@ export default class UserModel {
         default: JSON.stringify(createUserState()),
     })
     state!: UserState;
+
+    @OneToOne(() => TelegramProfileModel, {
+        cascade: true,
+        nullable: true,
+    })
+    @JoinColumn()
+    telegramProfile?: TelegramProfileModel;
 }

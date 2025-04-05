@@ -1,5 +1,5 @@
-import { Migration1743802972539 } from "./1743802972539-migration";
+import { Migration1743826254361 } from "./1743826254361-migration";
 
-const DATABASE_MIGRATIONS: any[] = [Migration1743802972539];
+const DATABASE_MIGRATIONS: any[] = [Migration1743826254361];
 
 export default DATABASE_MIGRATIONS;

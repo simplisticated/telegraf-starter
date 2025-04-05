@@ -1,6 +1,6 @@
 import { Context } from "telegraf";
 import { Update } from "telegraf/typings/core/types/typegram";
-import DATABASE from "../data/store/database";
+import STORE from "../data/store/store";
 
 export default async function handleUser(
     context: Context<Update>,
@@ -12,8 +12,7 @@ export default async function handleUser(
         return;
     }
 
-    const isNewUser = (await DATABASE.getUserByTelegramId(sender.id)) === null;
-    await DATABASE.createOrUpdateUser({
+    const result = await STORE.createOrUpdateUserWithTelegramProfile({
         telegram_id: sender.id,
         is_bot: sender.is_bot,
         first_name: sender.first_name,
@@ -23,7 +22,13 @@ export default async function handleUser(
         is_premium: sender.is_premium ?? false,
     });
 
-    if (isNewUser) {
+    if (result) {
+        await STORE.updateUserState(sender.id, previousState => ({
+            messageCount: (previousState.messageCount ?? 0) + 1,
+        }));
+    }
+
+    if (result?.isNewUser) {
         console.log(`New user!`);
     }
 
