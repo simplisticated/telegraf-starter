@@ -1,82 +1,73 @@
 import { Entity, Column, PrimaryGeneratedColumn } from "typeorm";
+import { createUserState, UserState } from "../types/user-state";
 
 @Entity({
     name: "User",
 })
 export default class UserModel {
     @PrimaryGeneratedColumn()
-    declare id: number;
+    id!: number;
 
     @Column({
         type: "integer",
         nullable: false,
     })
-    declare creation_date: Date;
+    creation_date!: Date;
 
     @Column({
         type: "integer",
         nullable: true,
     })
-    declare modification_date?: Date;
+    modification_date?: Date;
 
     @Column({
         type: "integer",
         nullable: false,
         unique: true,
     })
-    declare telegram_id: number;
+    telegram_id!: number;
 
     @Column({
         type: "boolean",
         nullable: false,
     })
-    declare is_bot: boolean;
+    is_bot!: boolean;
 
     @Column({
         type: "text",
         nullable: false,
     })
-    declare first_name: string;
+    first_name!: string;
 
     @Column({
         type: "text",
         nullable: true,
     })
-    declare last_name?: string;
+    last_name?: string;
 
     @Column({
         type: "text",
         nullable: true,
     })
-    declare username?: string;
+    username?: string;
 
     @Column({
         type: "text",
         nullable: true,
     })
-    declare language_code?: string;
+    language_code?: string;
 
     @Column({
         type: "boolean",
         nullable: false,
         default: false,
     })
-    declare is_premium: boolean;
+    is_premium!: boolean;
 
     @Column({
         type: "json",
         nullable: false,
-        default: createEmptyUserState(),
+        default: JSON.stringify(createUserState()),
     })
-    declare state: UserState;
-}
-
-export type UserState = {
-    startCount: number;
-};
-
-function createEmptyUserState(): UserState {
-    return {
-        startCount: 0,
-    };
+    state!: UserState;
 }

@@ -1,6 +1,11 @@
 module.exports = {
     root: true,
-    extends: ["airbnb", "plugin:@typescript-eslint/recommended", "prettier"],
+    extends: [
+        "airbnb",
+        "airbnb-typescript",
+        "plugin:@typescript-eslint/recommended",
+        "prettier",
+    ],
     rules: {
         "import/extensions": [
             "error",
@@ -23,5 +28,14 @@ module.exports = {
         ],
         "@typescript-eslint/no-explicit-any": "off",
     },
-    ignorePatterns: ["dist/", "package-scripts/", "*-migration.ts"],
+    ignorePatterns: [
+        "dist/",
+        "package-scripts/",
+        ".eslintrc.js",
+        "*-migration.ts",
+    ],
+    parser: "@typescript-eslint/parser",
+    parserOptions: {
+        project: "./tsconfig.json",
+    },
 };
