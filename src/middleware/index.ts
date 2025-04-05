@@ -1,9 +1,10 @@
+import checkIfBlocked from "./check-if-blocked";
 import handleMessageCount from "./handle-message-count";
-import handleUser from "./handle-user";
+import handleUserData from "./handle-user-data";
 
 /**
  * All middleware functions listed here will be performed in the order they appear in this array.
  */
-const MIDDLEWARE_LIST = [handleUser, handleMessageCount];
+const MIDDLEWARE_LIST = [handleUserData, checkIfBlocked, handleMessageCount];
 
 export default MIDDLEWARE_LIST;

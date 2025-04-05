@@ -2,7 +2,7 @@ import { Context } from "telegraf";
 import { Update } from "telegraf/typings/core/types/typegram";
 import STORE from "../data/store/store";
 
-export default async function handleUser(
+export default async function handleUserData(
     context: Context<Update>,
     next: () => Promise<void>
 ) {
