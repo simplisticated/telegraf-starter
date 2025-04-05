@@ -49,6 +49,7 @@ Here is an example `.env` file:
 
 ```
 TELEGRAM_TOKEN=1234567890
+APP_ENVIRONMENT=local
 ```
 
 ## Scripts
