@@ -57,6 +57,26 @@ class Store {
         }
     }
 
+    async isAdministrator(telegramId: number): Promise<boolean> {
+        try {
+            const user = await this.getUserByTelegramId(telegramId);
+            return user?.is_administrator ?? false;
+        } catch (error) {
+            console.error(error);
+            return false;
+        }
+    }
+
+    async isBlocked(telegramId: number): Promise<boolean> {
+        try {
+            const user = await this.getUserByTelegramId(telegramId);
+            return user?.is_blocked ?? false;
+        } catch (error) {
+            console.error(error);
+            return false;
+        }
+    }
+
     async createOrUpdateUser(
         userData: Partial<UserModel>
     ): Promise<{ user: UserModel; isNewUser: boolean } | null> {

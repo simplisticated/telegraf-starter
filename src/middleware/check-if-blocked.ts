@@ -12,9 +12,9 @@ export default async function checkIfBlocked(
         return;
     }
 
-    const user = await STORE.getUserByTelegramId(sender.id);
+    const isBlocked = await STORE.isBlocked(sender.id);
 
-    if (user && user.is_blocked) {
+    if (isBlocked) {
         context.reply(`You are blocked from using this bot.`);
         return;
     }
