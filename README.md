@@ -7,6 +7,8 @@ features and tools:
 -   Jest
 -   Prettier
 -   ESLint with Airbnb style
+-   TypeORM
+-   100% automatic user management with SQLite database
 
 ## How to Get Started
 
