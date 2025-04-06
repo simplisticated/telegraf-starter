@@ -179,6 +179,25 @@ const apiUrl = getValueForCurrentEnvironment({
 });
 ```
 
+## Database
+
+This project uses SQLite as its database engine, managed through TypeORM. The
+database file is located at
+
+```
+data/<APP_ENVIRONMENT>/database.sqlite
+```
+
+For instance, if the `APP_ENVIRONMENT` is set to `production`, the database path
+would be
+
+```
+data/production/database.sqlite
+```
+
+Database interactions are facilitated by the [STORE](./src/data/store/store.ts)
+object, which offers essential methods for reading and writing data models.
+
 ## User Management
 
 This project uses two main models to manage users: [UserModel](#usermodel) and
@@ -190,10 +209,10 @@ Represents a platform user. Key fields include:
 
 -   `id` - unique user identifier;
 -   `is_administrator` - flag indicating whether the user is an administrator
-    (default is `0`);
--   `is_blocked` - user block flag (default is `0`).
+    (default is `false`);
+-   `is_blocked` - user block flag (default is `false`).
 
-To make a user an administrator: set `is_administrator = 1` in the database.
+To make a user an administrator: set `is_administrator = true` in the database.
 
 To check if the user is administrator, use:
 
@@ -201,7 +220,7 @@ To check if the user is administrator, use:
 const isAdministrator = await STORE.isAdministrator(telegramId);
 ```
 
-To block a user: set `is_blocked = 1` in the database.
+To block a user: set `is_blocked = true` in the database.
 
 To check if the user is blocked, use:
 
