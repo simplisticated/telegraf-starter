@@ -12,5 +12,14 @@ export default async function handleCommand(
     }
 ) {
     // Implement handler for commands here.
-    console.log(context.message.text);
+
+    switch (context.command) {
+        case "start": {
+            console.log(`/start`);
+            break;
+        }
+        default: {
+            break;
+        }
+    }
 }
