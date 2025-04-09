@@ -22,12 +22,6 @@ export default async function handleUserData(
         is_premium: sender.is_premium ?? false,
     });
 
-    if (result) {
-        await STORE.updateUserState(sender.id, previousState => ({
-            messageCount: (previousState.messageCount ?? 0) + 1,
-        }));
-    }
-
     if (result?.isNewUser) {
         console.log(`New user!`);
     }
