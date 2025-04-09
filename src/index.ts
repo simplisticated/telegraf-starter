@@ -1,27 +1,29 @@
-import { Telegraf } from "telegraf";
-import { message } from "telegraf/filters";
+import { Scenes, session, Telegraf } from "telegraf";
 import ENV from "./env";
-import MIDDLEWARE_LIST from "./middleware";
 import "reflect-metadata";
 import STORE from "./data/store/store";
-import handleTextMessage from "./messages/text";
-import handleCommand from "./messages/command";
-import handlePhotoMessage from "./messages/photo";
+import handleUserData from "./middleware/handle-user-data";
+import checkIfBlocked from "./middleware/check-if-blocked";
+import handleMessageCount from "./middleware/handle-message-count";
+import Context from "./session/context";
+import START_SCENE, { START_SCENE_ID } from "./scenes/start";
 
-async function start(): Promise<Telegraf> {
+async function start(): Promise<Telegraf<Context>> {
     if (!ENV.TELEGRAM_TOKEN) {
         throw new Error("Telegram token not found");
     }
 
     await STORE.initialize();
 
-    const bot = new Telegraf(ENV.TELEGRAM_TOKEN);
-    MIDDLEWARE_LIST.forEach(middleware => bot.use(middleware));
-    bot.command(/.*./s, context => {
-        handleCommand(context);
-    });
-    bot.on(message("text"), context => handleTextMessage(context));
-    bot.on(message("photo"), context => handlePhotoMessage(context));
+    const stage = new Scenes.Stage<Context>([START_SCENE]);
+
+    const bot = new Telegraf<Context>(ENV.TELEGRAM_TOKEN);
+    bot.use(handleUserData);
+    bot.use(checkIfBlocked);
+    bot.use(handleMessageCount);
+    bot.use(session());
+    bot.use(stage.middleware());
+    bot.start(async context => context.scene.enter(START_SCENE_ID));
     bot.launch();
     return bot;
 }
