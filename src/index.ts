@@ -18,9 +18,9 @@ async function start(): Promise<Telegraf<Context>> {
     const stage = new Scenes.Stage<Context>([START_SCENE]);
 
     const bot = new Telegraf<Context>(ENV.TELEGRAM_TOKEN);
-    bot.use(handleUserData); // writes the user's information to the database
-    bot.use(checkIfBlocked); // if the user is blocked, they receive a message and are not passed further
-    bot.use(handleMessageCount); // increments the user's message count and stores it in the database
+    bot.use(handleUserData);
+    bot.use(checkIfBlocked);
+    bot.use(handleMessageCount);
     bot.use(session());
     bot.use(stage.middleware());
     bot.start(async context => context.scene.enter(START_SCENE_ID));
