@@ -1,6 +1,7 @@
 import { Context } from "telegraf";
 import { Update } from "telegraf/typings/core/types/typegram";
 import STORE from "../data/store/store";
+import { getUserDescription } from "../app/users";
 
 export default async function handleUserData(
     context: Context<Update>,
@@ -23,7 +24,8 @@ export default async function handleUserData(
     });
 
     if (result?.isNewUser) {
-        console.log(`New user!`);
+        const userDescription = getUserDescription(sender);
+        console.log(`New user: ${userDescription}`);
     }
 
     // Here you can implement sending user information to the backend or analytics.

@@ -27,6 +27,7 @@ module.exports = {
             },
         ],
         "@typescript-eslint/no-explicit-any": "off",
+        "import/prefer-default-export": "off",
     },
     ignorePatterns: [
         "dist/",
