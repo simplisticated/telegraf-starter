@@ -14,3 +14,16 @@ export function getUserDescription(user: User): string {
         .filter(value => value !== null)
         .join(" ");
 }
+
+export function getUserFullNameForGreeting(user: User): string | undefined {
+    const firstName = (user.first_name ?? "").trim();
+    const { username } = user;
+
+    if (firstName.length > 0) {
+        return firstName;
+    }
+    if (username) {
+        return username;
+    }
+    return undefined;
+}
