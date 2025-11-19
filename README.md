@@ -148,8 +148,8 @@ development, testing, or production.
 There are three environment types:
 
 -   `production` - the environment used in production deployments;
--   `test` - internal test environment, similar to `production` but not publicly
-    available;
+-   `internal` - internal test environment, similar to `production` but not
+    publicly available;
 -   `local` - local development, where more relaxed rules may apply: logging,
     test features, etc.
 
@@ -160,23 +160,12 @@ environment value anywhere in the project using `CURRENT_ENVIRONMENT`.
 Example usage:
 
 ```typescript
-import { AppEnvironment, CURRENT_ENVIRONMENT } from "./app/environment";
+import { AppEnvironment } from "./app/environment";
+import ENV from "./app/env";
 
-if (CURRENT_ENVIRONMENT === AppEnvironment.production) {
+if (ENV.APP_ENVIRONMENT === AppEnvironment.production) {
     // The bot is in production mode
 }
-```
-
-You can also define environment-specific values:
-
-```typescript
-import { getValueForCurrentEnvironment } from "./app/environment";
-
-const apiUrl = getValueForCurrentEnvironment({
-    production: "https://api.server.com",
-    test: "https://api-test.server.com",
-    local: "http://localhost:3000",
-});
 ```
 
 ## Database
