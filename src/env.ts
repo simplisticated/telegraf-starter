@@ -1,11 +1,64 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { configDotenv } from "dotenv";
-import { env } from "process";
+import { isAppEnvironment } from "./app/environment";
 
 configDotenv();
 
+function getString(key: string): string | null {
+    return process.env[key] ?? null;
+}
+
+function getNumber(key: string): number | null {
+    const stringValue = getString(key)?.trim();
+    if (!stringValue) return null;
+    const parsedNumber = Number(stringValue);
+    return Number.isNaN(parsedNumber) ? null : parsedNumber;
+}
+
+function getBoolean(key: string): boolean | null {
+    const stringValue = getString(key)?.trim().toLowerCase();
+    if (!stringValue) return null;
+    const TRUE = String(true).toLowerCase();
+    const FALSE = String(false).toLowerCase();
+    const isBoolean = [TRUE, FALSE].includes(stringValue);
+    return isBoolean ? stringValue === TRUE : null;
+}
+
+function getStringList(key: string, divider: string = ","): string[] | null {
+    const stringValue = getString(key)?.trim();
+    if (!stringValue) return null;
+    return stringValue.split(divider);
+}
+
+function getNumberList(key: string, divider: string = ","): number[] | null {
+    const stringValue = getString(key)?.trim();
+    if (!stringValue) return null;
+    const stringList = stringValue.split(divider);
+    return stringList
+        .map(value => {
+            const parsedNumber = Number(value);
+            return Number.isNaN(parsedNumber) ? null : parsedNumber;
+        })
+        .filter(value => value !== null);
+}
+
 const ENV = {
-    TELEGRAM_TOKEN: env.TELEGRAM_TOKEN,
-    APP_ENVIRONMENT: env.APP_ENVIRONMENT,
+    TELEGRAM_TOKEN: (() => {
+        const name = "TELEGRAM_TOKEN";
+        const value = getString(name);
+        if (!value) {
+            throw new Error(`${name} not found`);
+        }
+        return value;
+    })(),
+    APP_ENVIRONMENT: (() => {
+        const name = "APP_ENVIRONMENT";
+        const value = getString(name);
+        if (!isAppEnvironment(value)) {
+            throw new Error(`${name} not found`);
+        }
+        return value;
+    })(),
 };
 
 export default ENV;

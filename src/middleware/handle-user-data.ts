@@ -8,27 +8,25 @@ export default async function handleUserData(
     next: () => Promise<void>
 ) {
     const sender = context.from;
-    if (!sender) {
-        next();
-        return;
+
+    if (sender) {
+        const result = await STORE.createOrUpdateUserWithTelegramProfile({
+            telegram_id: sender.id,
+            is_bot: sender.is_bot,
+            first_name: sender.first_name,
+            last_name: sender.last_name,
+            username: sender.username,
+            language_code: sender.language_code,
+            is_premium: sender.is_premium ?? false,
+        });
+
+        if (result?.isNewUser) {
+            const userDescription = getUserDescription(sender);
+            console.log(`New user: ${userDescription}`);
+        }
+
+        // Here you can implement sending user information to the backend or analytics.
     }
-
-    const result = await STORE.createOrUpdateUserWithTelegramProfile({
-        telegram_id: sender.id,
-        is_bot: sender.is_bot,
-        first_name: sender.first_name,
-        last_name: sender.last_name,
-        username: sender.username,
-        language_code: sender.language_code,
-        is_premium: sender.is_premium ?? false,
-    });
-
-    if (result?.isNewUser) {
-        const userDescription = getUserDescription(sender);
-        console.log(`New user: ${userDescription}`);
-    }
-
-    // Here you can implement sending user information to the backend or analytics.
 
     next();
 }

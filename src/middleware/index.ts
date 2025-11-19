@@ -5,6 +5,6 @@ import handleUserData from "./handle-user-data";
 /**
  * All middleware functions listed here will be performed in the order they appear in this array.
  */
-const MIDDLEWARE_LIST = [handleUserData, checkIfBlocked, handleMessageCount];
+const MIDDLEWARE_LIST = [handleUserData, handleMessageCount, checkIfBlocked];
 
 export default MIDDLEWARE_LIST;

@@ -7,14 +7,12 @@ export default async function handleMessageCount(
     next: () => Promise<void>
 ) {
     const sender = context.from;
-    if (!sender) {
-        next();
-        return;
-    }
 
-    await STORE.updateUserState(sender.id, previousState => ({
-        messageCount: (previousState.messageCount ?? 0) + 1,
-    }));
+    if (sender) {
+        await STORE.updateUserState(sender.id, previousState => ({
+            messageCount: (previousState.messageCount ?? 0) + 1,
+        }));
+    }
 
     next();
 }
