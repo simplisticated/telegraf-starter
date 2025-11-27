@@ -1,25 +1,24 @@
 import { Scenes, session, Telegraf } from "telegraf";
 import "reflect-metadata";
 import STORE from "./data/store/store";
-import Context from "./session/context";
-import START_SCENE, { START_SCENE_ID } from "./scenes/start";
-import MIDDLEWARE_LIST from "./middleware";
+import START_SCENE from "./scenes/start";
 import ENV from "./app/env";
+import { EngineContext } from "./session/context";
+import { MIDDLEWARE_LIST } from "./middleware";
 
-async function start(): Promise<Telegraf<Context>> {
+async function start(): Promise<Telegraf<EngineContext>> {
     if (!ENV.TELEGRAM_TOKEN) {
         throw new Error("Telegram token not found");
     }
 
     await STORE.initialize();
 
-    const stage = new Scenes.Stage<Context>([START_SCENE]);
+    const stage = new Scenes.Stage<EngineContext>([START_SCENE]);
 
-    const bot = new Telegraf<Context>(ENV.TELEGRAM_TOKEN);
-    MIDDLEWARE_LIST.forEach(middleware => bot.use(middleware));
+    const bot = new Telegraf<EngineContext>(ENV.TELEGRAM_TOKEN);
     bot.use(session());
     bot.use(stage.middleware());
-    bot.start(async context => context.scene.enter(START_SCENE_ID));
+    MIDDLEWARE_LIST.forEach(middleware => bot.use(middleware));
     bot.launch();
     return bot;
 }
