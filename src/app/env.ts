@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { configDotenv } from "dotenv";
-import { isAppEnvironment } from "./app-environment";
+import { AppEnvironment, isAppEnvironment } from "./app-environment";
 
 configDotenv();
 
@@ -43,18 +43,14 @@ function getNumberList(key: string, divider: string = ","): number[] | null {
 }
 
 const ENV = {
+    APP_ENVIRONMENT: (() => {
+        const value = getString("APP_ENVIRONMENT");
+        return isAppEnvironment(value) ? value : AppEnvironment.local;
+    })(),
     TELEGRAM_TOKEN: (() => {
         const name = "TELEGRAM_TOKEN";
         const value = getString(name);
         if (!value) {
-            throw new Error(`${name} not found`);
-        }
-        return value;
-    })(),
-    APP_ENVIRONMENT: (() => {
-        const name = "APP_ENVIRONMENT";
-        const value = getString(name);
-        if (!isAppEnvironment(value)) {
             throw new Error(`${name} not found`);
         }
         return value;
