@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { configDotenv } from "dotenv";
-import { isAppEnvironment } from "./app/environment";
+import { isAppEnvironment } from "./app-environment";
 
 configDotenv();
 
