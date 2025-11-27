@@ -1,10 +1,10 @@
 import { Scenes, session, Telegraf } from "telegraf";
-import ENV from "./env";
 import "reflect-metadata";
 import STORE from "./data/store/store";
 import Context from "./session/context";
 import START_SCENE, { START_SCENE_ID } from "./scenes/start";
 import MIDDLEWARE_LIST from "./middleware";
+import ENV from "./app/env";
 
 async function start(): Promise<Telegraf<Context>> {
     if (!ENV.TELEGRAM_TOKEN) {
