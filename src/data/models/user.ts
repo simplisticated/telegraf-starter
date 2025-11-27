@@ -4,6 +4,8 @@ import {
     PrimaryGeneratedColumn,
     JoinColumn,
     OneToOne,
+    CreateDateColumn,
+    UpdateDateColumn,
 } from "typeorm";
 import { createUserState, UserState } from "../types/user-state";
 import TelegramProfileModel from "./telegram-profile";
@@ -15,14 +17,14 @@ export default class UserModel {
     @PrimaryGeneratedColumn()
     id!: number;
 
-    @Column({
-        type: "integer",
+    @CreateDateColumn({
+        type: "datetime",
         nullable: false,
     })
     creation_date!: Date;
 
-    @Column({
-        type: "integer",
+    @UpdateDateColumn({
+        type: "datetime",
         nullable: true,
     })
     modification_date?: Date;

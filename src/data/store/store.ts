@@ -93,7 +93,7 @@ class Store {
                     if (existingUser) {
                         await repository.update(
                             { id: existingUser.id },
-                            { ...userData, modification_date: new Date() }
+                            userData
                         );
                         const updatedUser = await this.getUserById(
                             existingUser.id
@@ -105,12 +105,7 @@ class Store {
                               }
                             : null;
                     }
-                    const resultUserData: Partial<UserModel> = {
-                        ...userData,
-                        creation_date: new Date(),
-                    };
-                    const user = await repository.save(resultUserData);
-
+                    const user = await repository.save(userData);
                     const updatedUser = await this.getUserById(user.id);
                     return updatedUser
                         ? {
@@ -148,13 +143,9 @@ class Store {
                         ...user.state,
                         ...handler(user.state),
                     };
-                    await manager.getRepository(UserModel).update(
-                        { id: user.id },
-                        {
-                            state: updatedState,
-                            modification_date: new Date(),
-                        }
-                    );
+                    await manager
+                        .getRepository(UserModel)
+                        .update({ id: user.id }, { state: updatedState });
                     const updatedUser = await this.getUserById(user.id);
                     return updatedUser;
                 }
@@ -171,11 +162,7 @@ class Store {
         try {
             const telegramProfile = await this.configuration.dataSource
                 .getRepository(TelegramProfileModel)
-                .findOne({
-                    where: {
-                        id,
-                    },
-                });
+                .findOne({ where: { id } });
             return telegramProfile;
         } catch (error) {
             console.error(error);
@@ -189,11 +176,7 @@ class Store {
         try {
             const telegramProfile = await this.configuration.dataSource
                 .getRepository(TelegramProfileModel)
-                .findOne({
-                    where: {
-                        telegram_id: telegramId,
-                    },
-                });
+                .findOne({ where: { telegram_id: telegramId } });
             return telegramProfile;
         } catch (error) {
             console.error(error);
@@ -225,10 +208,7 @@ class Store {
                     if (existingTelegramProfile) {
                         await repository.update(
                             { id: existingTelegramProfile.id },
-                            {
-                                ...telegramProfileData,
-                                modification_date: new Date(),
-                            }
+                            telegramProfileData
                         );
                         const telegramProfile =
                             await this.getTelegramProfileById(
@@ -241,15 +221,8 @@ class Store {
                               }
                             : null;
                     }
-                    const resultTelegramProfileData: Partial<TelegramProfileModel> =
-                        {
-                            ...telegramProfileData,
-                            creation_date: new Date(),
-                        };
-                    const telegramProfile = await repository.save(
-                        resultTelegramProfileData
-                    );
-
+                    const telegramProfile =
+                        await repository.save(telegramProfileData);
                     const updatedTelegramProfile =
                         await this.getTelegramProfileById(telegramProfile.id);
                     return updatedTelegramProfile
@@ -295,7 +268,6 @@ class Store {
                             {
                                 ...existingTelegramProfile,
                                 ...telegramProfileData,
-                                modification_date: new Date(),
                             }
                         );
                         const updatedUser = await this.getUserById(
@@ -309,15 +281,11 @@ class Store {
                             : null;
                     }
 
-                    const user = await userRepository.save({
-                        creation_date: new Date(),
-                    });
+                    const user = await userRepository.save({});
                     await telegramProfileRepository.save({
                         ...telegramProfileData,
                         user,
-                        creation_date: new Date(),
                     });
-
                     const updatedUser = await this.getUserById(user.id);
                     return updatedUser
                         ? {

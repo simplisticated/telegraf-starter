@@ -1,4 +1,11 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToOne } from "typeorm";
+import {
+    Entity,
+    Column,
+    PrimaryGeneratedColumn,
+    OneToOne,
+    CreateDateColumn,
+    UpdateDateColumn,
+} from "typeorm";
 import UserModel from "./user";
 
 @Entity({
@@ -8,14 +15,14 @@ export default class TelegramProfileModel {
     @PrimaryGeneratedColumn()
     id!: number;
 
-    @Column({
-        type: "integer",
+    @CreateDateColumn({
+        type: "datetime",
         nullable: false,
     })
     creation_date!: Date;
 
-    @Column({
-        type: "integer",
+    @UpdateDateColumn({
+        type: "datetime",
         nullable: true,
     })
     modification_date?: Date;
