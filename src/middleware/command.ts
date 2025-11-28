@@ -1,6 +1,6 @@
 import { EngineContext } from "../session/context";
 
-export default async function handleCommand(
+export default async function command(
     context: EngineContext,
     next: () => Promise<void>
 ) {
@@ -10,8 +10,8 @@ export default async function handleCommand(
         context.message.text.startsWith("/")
     ) {
         const segments = context.message.text.split(" ");
-        const command = segments[0].slice(1);
-        switch (command) {
+        const commandFromMessage = segments[0].slice(1);
+        switch (commandFromMessage) {
             case "start": {
                 await context.scene.leave();
                 await context.scene.enter("start-scene");

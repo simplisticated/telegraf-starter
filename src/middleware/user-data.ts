@@ -3,7 +3,7 @@ import { Update } from "telegraf/typings/core/types/typegram";
 import STORE from "../data/store/store";
 import { getUserDescription } from "../app/users";
 
-export default async function handleUserData(
+export default async function userData(
     context: Context<Update>,
     next: () => Promise<void>
 ) {
