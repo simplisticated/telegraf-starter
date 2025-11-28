@@ -5,13 +5,10 @@ import { UserState } from "../types/user-state";
 import UserModel from "../models/user";
 import Queue from "../../tasks/queue";
 import SessionModel from "../models/session";
+import { DATABASE_QUEUE } from "../../tasks/instances";
 
 export class Store {
-    private queue = new Queue({
-        timeIntervalBetweenIterations: 1000,
-        numberOfBlocksToHandleDuringIteration: 1,
-        start: "immediately",
-    });
+    private queue: Queue = DATABASE_QUEUE;
 
     constructor(private configuration: { dataSource: DataSource }) {}
 
