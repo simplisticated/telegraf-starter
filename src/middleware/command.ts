@@ -23,5 +23,5 @@ export default async function command(
         }
     }
 
-    next();
+    await next();
 }

@@ -17,5 +17,5 @@ export default async function checkIfBlocked(
         }
     }
 
-    next();
+    await next();
 }

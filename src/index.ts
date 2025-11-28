@@ -6,6 +6,7 @@ import ENV from "./app/env";
 import { EngineContext } from "./session/context";
 import { MIDDLEWARE_LIST } from "./middleware";
 import { SessionStore } from "./session/store";
+import { INCOMING_MESSAGE_QUEUE } from "./tasks/instances";
 
 async function start(): Promise<Telegraf<EngineContext>> {
     if (!ENV.TELEGRAM_TOKEN) {
@@ -17,6 +18,7 @@ async function start(): Promise<Telegraf<EngineContext>> {
     const stage = new Scenes.Stage<EngineContext>([START_SCENE]);
 
     const bot = new Telegraf<EngineContext>(ENV.TELEGRAM_TOKEN);
+    bot.use(async (context, next) => INCOMING_MESSAGE_QUEUE.add(next));
     bot.use(
         session({
             store: new SessionStore({ dataStore: STORE }),

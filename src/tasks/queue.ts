@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
+import { wait } from "./wait";
 
 export default class Queue {
     private blocks: BlockContainer<any>[] = [];
@@ -80,15 +81,8 @@ export default class Queue {
 
     private async start() {
         await this.iteration();
-        await this.wait(this.configuration.timeIntervalBetweenIterations);
+        await wait(this.configuration.timeIntervalBetweenIterations);
         setImmediate(this.start.bind(this));
-    }
-
-    // eslint-disable-next-line class-methods-use-this
-    private async wait(interval: number) {
-        await new Promise(resolve => {
-            setTimeout(resolve, interval);
-        });
     }
 
     subscribe(handler: UpdateHandler): string {

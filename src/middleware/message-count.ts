@@ -14,5 +14,5 @@ export default async function messageCount(
         }));
     }
 
-    next();
+    await next();
 }

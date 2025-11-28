@@ -28,5 +28,5 @@ export default async function userData(
         // Here you can implement sending user information to the backend or analytics.
     }
 
-    next();
+    await next();
 }
