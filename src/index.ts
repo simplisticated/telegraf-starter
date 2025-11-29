@@ -9,7 +9,7 @@ import { INCOMING_MESSAGE_QUEUE } from "./tasks/instances";
 import storeUserData from "./middleware/store-user-data";
 import storeMessageCount from "./middleware/store-message-count";
 import checkIfBlocked from "./middleware/check-if-blocked";
-import handleCommand from "./middleware/handle-command";
+import { handleCommandWithoutScene } from "./middleware/handle-command";
 import handleMessageWithoutScene from "./middleware/handle-message-without-scene";
 
 async function start(): Promise<Telegraf<EngineContext>> {
@@ -36,7 +36,7 @@ async function start(): Promise<Telegraf<EngineContext>> {
     bot.use(storeMessageCount);
     bot.use(checkIfBlocked);
     bot.use(stage.middleware());
-    bot.use(handleCommand({ sceneIsActive: false }));
+    bot.use(handleCommandWithoutScene);
     bot.use(handleMessageWithoutScene);
     bot.launch();
     return bot;
