@@ -1,0 +1,44 @@
+import { Middleware } from "telegraf";
+import { EngineContext } from "../session/context";
+
+async function handler(context: EngineContext, next: () => Promise<void>) {
+    if (
+        context.message &&
+        "text" in context.message &&
+        context.message.text.startsWith("/")
+    ) {
+        const segments = context.message.text.split(" ");
+        const commandFromMessage = segments[0].slice(1);
+        switch (commandFromMessage) {
+            case "start": {
+                await context.scene.leave();
+                await context.scene.enter("start-scene");
+                return;
+            }
+            default: {
+                break;
+            }
+        }
+    }
+
+    await next();
+}
+
+export default function handleCommand(configuration: {
+    sceneIsActive: boolean;
+}): Middleware<EngineContext> {
+    if (configuration.sceneIsActive) {
+        return (context, next) => {
+            if (context.scene?.current !== undefined) {
+                return handler(context, next);
+            }
+            return next();
+        };
+    }
+    return (context, next) => {
+        if (context.scene?.current) {
+            return handler(context, next);
+        }
+        return next();
+    };
+}

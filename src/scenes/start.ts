@@ -1,25 +1,23 @@
 import { Scenes } from "telegraf";
 import { message } from "telegraf/filters";
 import { EngineContext } from "../session/context";
-import { MIDDLEWARE_LIST } from "../middleware";
 import { OUTGOING_MESSAGE_QUEUE } from "../tasks/instances";
+import handleCommand from "../middleware/handle-command";
 
 export const START_SCENE_ID = "start-scene";
 
 const START_SCENE = new Scenes.BaseScene<EngineContext>(START_SCENE_ID);
-MIDDLEWARE_LIST.forEach(middleware => START_SCENE.use(middleware));
+START_SCENE.use(handleCommand({ sceneIsActive: true }));
 START_SCENE.enter(async (context, next) => {
-    await OUTGOING_MESSAGE_QUEUE.add(async () => {
-        await context.reply("Hello!");
-        await next();
-    });
+    await OUTGOING_MESSAGE_QUEUE.add(() => context.reply("Hello!"));
+    await next();
 });
 START_SCENE.on(message(), async (context, next) => {
-    await OUTGOING_MESSAGE_QUEUE.add(async () => {
-        await context.reply("Message received", {
+    await OUTGOING_MESSAGE_QUEUE.add(() =>
+        context.reply("Message received", {
             reply_to_message_id: context.message.message_id,
-        });
-        await next();
-    });
+        })
+    );
+    await next();
 });
 export default START_SCENE;
