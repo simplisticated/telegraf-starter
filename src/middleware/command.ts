@@ -23,7 +23,7 @@ async function handler(context: EngineContext, next: () => Promise<void>) {
     await next();
 }
 
-export function handleCommandWithoutScene(
+export function commandWithoutScene(
     context: EngineContext,
     next: () => Promise<void>
 ) {
@@ -33,7 +33,7 @@ export function handleCommandWithoutScene(
     return next();
 }
 
-export function handleCommandWithActiveScene(
+export function commandWithActiveScene(
     context: EngineContext,
     next: () => Promise<void>
 ) {

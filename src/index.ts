@@ -6,11 +6,11 @@ import ENV from "./app/env";
 import { EngineContext } from "./session/context";
 import { SessionStore } from "./session/store";
 import { INCOMING_MESSAGE_QUEUE } from "./tasks/instances";
-import storeUserData from "./middleware/store-user-data";
-import storeMessageCount from "./middleware/store-message-count";
+import userData from "./middleware/user-data";
+import messageCount from "./middleware/message-count";
 import checkIfBlocked from "./middleware/check-if-blocked";
-import { handleCommandWithoutScene } from "./middleware/handle-command";
-import handleMessageWithoutScene from "./middleware/handle-message-without-scene";
+import { commandWithoutScene } from "./middleware/command";
+import messageWithoutScene from "./middleware/message-without-scene";
 
 async function start(): Promise<Telegraf<EngineContext>> {
     if (!ENV.TELEGRAM_TOKEN) {
@@ -32,12 +32,12 @@ async function start(): Promise<Telegraf<EngineContext>> {
             },
         })
     );
-    bot.use(storeUserData);
-    bot.use(storeMessageCount);
+    bot.use(userData);
+    bot.use(messageCount);
     bot.use(checkIfBlocked);
     bot.use(stage.middleware());
-    bot.use(handleCommandWithoutScene);
-    bot.use(handleMessageWithoutScene);
+    bot.use(commandWithoutScene);
+    bot.use(messageWithoutScene);
     bot.launch();
     return bot;
 }
