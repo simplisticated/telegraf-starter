@@ -21,11 +21,30 @@ async function start(): Promise<Telegraf<EngineContext>> {
     const stage = new Scenes.Stage<EngineContext>([START_SCENE]);
 
     const bot = new Telegraf<EngineContext>(ENV.TELEGRAM_TOKEN);
+    /**
+     * Добавляем обработку сообщения в очередь с целью контроля нагрузки на сервер.
+     */
     bot.use(messageQueue);
+    /**
+     * Переопределяем методы контекста.
+     * Это нужно для контроля количества запросов к серверу Telegram.
+     */
     bot.use(overrideContextMethods);
+    /**
+     * Настройка сессии для пользователя.
+     */
     bot.use(setupSession);
+    /**
+     * Обработка пользовательских данных: сохранение информации о пользователе в базу.
+     */
     bot.use(userData);
+    /**
+     * Подсчет количества сообщений от пользователя.
+     */
     bot.use(messageCount);
+    /**
+     * Проверяем, что пользователь не заблокирован.
+     */
     bot.use(checkIfBlocked);
     bot.use(stage.middleware());
     bot.use(commandWithoutScene);
