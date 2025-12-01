@@ -17,3 +17,9 @@ export const OUTGOING_MESSAGE_QUEUE = new Queue({
     numberOfBlocksToHandleDuringIteration: 5,
     start: "immediately",
 });
+
+export const TELEGRAM_API_REQUEST_QUEUE = new Queue({
+    timeIntervalBetweenIterations: 1000,
+    numberOfBlocksToHandleDuringIteration: 5,
+    start: "immediately",
+});
