@@ -3,13 +3,9 @@ import TelegramProfileModel from "../models/telegram-profile";
 import DATA_SOURCE from "./data-source";
 import { UserState } from "../types/user-state";
 import UserModel from "../models/user";
-import Queue from "../../tasks/queue";
 import SessionModel from "../models/session";
-import { DATABASE_QUEUE } from "../../tasks/instances";
 
 export class Store {
-    private queue: Queue = DATABASE_QUEUE;
-
     constructor(private configuration: { dataSource: DataSource }) {}
 
     async initialize(): Promise<boolean> {
@@ -85,84 +81,80 @@ export class Store {
     async createOrUpdateUser(
         userData: Partial<UserModel>
     ): Promise<{ user: UserModel; isNewUser: boolean } | null> {
-        return this.queue.add(async () => {
-            try {
-                return await this.configuration.dataSource.transaction(
-                    "SERIALIZABLE",
-                    async manager => {
-                        const repository = manager.getRepository(UserModel);
-                        const existingUser = userData.id
-                            ? await repository.findOne({
-                                  where: { id: userData.id },
-                              })
-                            : null;
-                        if (existingUser) {
-                            await repository.update(
-                                { id: existingUser.id },
-                                userData
-                            );
-                            const updatedUser = await this.getUserById(
-                                existingUser.id
-                            );
-                            return updatedUser
-                                ? {
-                                      user: updatedUser,
-                                      isNewUser: false,
-                                  }
-                                : null;
-                        }
-                        const user = await repository.save(userData);
-                        const updatedUser = await this.getUserById(user.id);
+        try {
+            return await this.configuration.dataSource.transaction(
+                "SERIALIZABLE",
+                async manager => {
+                    const repository = manager.getRepository(UserModel);
+                    const existingUser = userData.id
+                        ? await repository.findOne({
+                              where: { id: userData.id },
+                          })
+                        : null;
+                    if (existingUser) {
+                        await repository.update(
+                            { id: existingUser.id },
+                            userData
+                        );
+                        const updatedUser = await this.getUserById(
+                            existingUser.id
+                        );
                         return updatedUser
                             ? {
                                   user: updatedUser,
-                                  isNewUser: true,
+                                  isNewUser: false,
                               }
                             : null;
                     }
-                );
-            } catch (error) {
-                console.error(error);
-                return null;
-            }
-        });
+                    const user = await repository.save(userData);
+                    const updatedUser = await this.getUserById(user.id);
+                    return updatedUser
+                        ? {
+                              user: updatedUser,
+                              isNewUser: true,
+                          }
+                        : null;
+                }
+            );
+        } catch (error) {
+            console.error(error);
+            return null;
+        }
     }
 
     async updateUserState(
         telegramId: number,
         handler: (previousState: UserState) => Partial<UserState>
     ): Promise<UserModel | null> {
-        return this.queue.add(async () => {
-            try {
-                return await this.configuration.dataSource.transaction(
-                    "SERIALIZABLE",
-                    async manager => {
-                        const userRepository = manager.getRepository(UserModel);
-                        const user = await userRepository.findOne({
-                            where: {
-                                telegramProfile: {
-                                    telegram_id: telegramId,
-                                },
+        try {
+            return await this.configuration.dataSource.transaction(
+                "SERIALIZABLE",
+                async manager => {
+                    const userRepository = manager.getRepository(UserModel);
+                    const user = await userRepository.findOne({
+                        where: {
+                            telegramProfile: {
+                                telegram_id: telegramId,
                             },
-                        });
-                        if (!user) return null;
-                        const updatedState: UserState = {
-                            ...user.state,
-                            ...handler(user.state),
-                        };
-                        await userRepository.update(
-                            { id: user.id },
-                            { state: updatedState }
-                        );
-                        const updatedUser = await this.getUserById(user.id);
-                        return updatedUser;
-                    }
-                );
-            } catch (error) {
-                console.error(error);
-                return null;
-            }
-        });
+                        },
+                    });
+                    if (!user) return null;
+                    const updatedState: UserState = {
+                        ...user.state,
+                        ...handler(user.state),
+                    };
+                    await userRepository.update(
+                        { id: user.id },
+                        { state: updatedState }
+                    );
+                    const updatedUser = await this.getUserById(user.id);
+                    return updatedUser;
+                }
+            );
+        } catch (error) {
+            console.error(error);
+            return null;
+        }
     }
 
     async getSessionBySessionId(id: string) {
@@ -184,65 +176,57 @@ export class Store {
     async createOrUpdateSession(
         sessionData: Partial<SessionModel>
     ): Promise<SessionModel | null> {
-        return this.queue.add(async () => {
-            try {
-                return await this.configuration.dataSource.transaction(
-                    "SERIALIZABLE",
-                    async manager => {
-                        if (!sessionData.session_id) {
-                            throw new Error(
-                                "Session should include session_id"
-                            );
-                        }
-                        const repository = manager.getRepository(SessionModel);
-                        const existingSession =
-                            await this.getSessionBySessionId(
-                                sessionData.session_id
-                            );
-                        if (existingSession) {
-                            await repository.update(
-                                { id: existingSession.id },
-                                sessionData
-                            );
-                            return this.getSessionBySessionId(
-                                sessionData.session_id
-                            );
-                        }
-                        const session = await repository.save(sessionData);
-                        if (!session) return null;
-                        const updatedSession = await this.getSessionBySessionId(
-                            session.session_id
-                        );
-                        return updatedSession;
+        try {
+            return await this.configuration.dataSource.transaction(
+                "SERIALIZABLE",
+                async manager => {
+                    if (!sessionData.session_id) {
+                        throw new Error("Session should include session_id");
                     }
-                );
-            } catch (error) {
-                console.error(error);
-                return null;
-            }
-        });
+                    const repository = manager.getRepository(SessionModel);
+                    const existingSession = await this.getSessionBySessionId(
+                        sessionData.session_id
+                    );
+                    if (existingSession) {
+                        await repository.update(
+                            { id: existingSession.id },
+                            sessionData
+                        );
+                        return this.getSessionBySessionId(
+                            sessionData.session_id
+                        );
+                    }
+                    const session = await repository.save(sessionData);
+                    if (!session) return null;
+                    const updatedSession = await this.getSessionBySessionId(
+                        session.session_id
+                    );
+                    return updatedSession;
+                }
+            );
+        } catch (error) {
+            console.error(error);
+            return null;
+        }
     }
 
     async removeSession(sessionId: string): Promise<boolean> {
-        return this.queue.add(async () => {
-            try {
-                return await this.configuration.dataSource.transaction(
-                    "SERIALIZABLE",
-                    async manager => {
-                        const repository = manager.getRepository(SessionModel);
-                        await repository.delete({
-                            session_id: sessionId,
-                        });
-                        const session =
-                            await this.getSessionBySessionId(sessionId);
-                        return session === null;
-                    }
-                );
-            } catch (error) {
-                console.error(error);
-                return false;
-            }
-        });
+        try {
+            return await this.configuration.dataSource.transaction(
+                "SERIALIZABLE",
+                async manager => {
+                    const repository = manager.getRepository(SessionModel);
+                    await repository.delete({
+                        session_id: sessionId,
+                    });
+                    const session = await this.getSessionBySessionId(sessionId);
+                    return session === null;
+                }
+            );
+        } catch (error) {
+            console.error(error);
+            return false;
+        }
     }
 
     async getTelegramProfileById(
@@ -279,121 +263,115 @@ export class Store {
         telegramProfile: TelegramProfileModel;
         isNewTelegramProfile: boolean;
     } | null> {
-        return this.queue.add(async () => {
-            try {
-                return await this.configuration.dataSource.transaction(
-                    "SERIALIZABLE",
-                    async manager => {
-                        if (!telegramProfileData.telegram_id) {
-                            throw new Error(
-                                "Telegram profile should include telegram_id"
-                            );
-                        }
-                        const repository =
-                            manager.getRepository(TelegramProfileModel);
-                        const existingTelegramProfile =
-                            await this.getTelegramProfileByTelegramId(
-                                telegramProfileData.telegram_id
-                            );
-                        if (existingTelegramProfile) {
-                            await repository.update(
-                                { id: existingTelegramProfile.id },
-                                telegramProfileData
-                            );
-                            const telegramProfile =
-                                await this.getTelegramProfileById(
-                                    existingTelegramProfile.id
-                                );
-                            return telegramProfile
-                                ? {
-                                      telegramProfile,
-                                      isNewTelegramProfile: false,
-                                  }
-                                : null;
-                        }
+        try {
+            return await this.configuration.dataSource.transaction(
+                "SERIALIZABLE",
+                async manager => {
+                    if (!telegramProfileData.telegram_id) {
+                        throw new Error(
+                            "Telegram profile should include telegram_id"
+                        );
+                    }
+                    const repository =
+                        manager.getRepository(TelegramProfileModel);
+                    const existingTelegramProfile =
+                        await this.getTelegramProfileByTelegramId(
+                            telegramProfileData.telegram_id
+                        );
+                    if (existingTelegramProfile) {
+                        await repository.update(
+                            { id: existingTelegramProfile.id },
+                            telegramProfileData
+                        );
                         const telegramProfile =
-                            await repository.save(telegramProfileData);
-                        const updatedTelegramProfile =
                             await this.getTelegramProfileById(
-                                telegramProfile.id
+                                existingTelegramProfile.id
                             );
-                        return updatedTelegramProfile
+                        return telegramProfile
                             ? {
                                   telegramProfile,
-                                  isNewTelegramProfile: true,
+                                  isNewTelegramProfile: false,
                               }
                             : null;
                     }
-                );
-            } catch (error) {
-                console.error(error);
-                return null;
-            }
-        });
+                    const telegramProfile =
+                        await repository.save(telegramProfileData);
+                    const updatedTelegramProfile =
+                        await this.getTelegramProfileById(telegramProfile.id);
+                    return updatedTelegramProfile
+                        ? {
+                              telegramProfile,
+                              isNewTelegramProfile: true,
+                          }
+                        : null;
+                }
+            );
+        } catch (error) {
+            console.error(error);
+            return null;
+        }
     }
 
     async createOrUpdateUserWithTelegramProfile(
         telegramProfileData: Partial<TelegramProfileModel>
     ): Promise<{ user: UserModel; isNewUser: boolean } | null> {
-        return this.queue.add(async () => {
-            try {
-                return await this.configuration.dataSource.transaction(
-                    "SERIALIZABLE",
-                    async manager => {
-                        if (!telegramProfileData.telegram_id) {
-                            throw new Error(
-                                "Telegram profile should include telegram_id"
-                            );
-                        }
-
-                        const userRepository = manager.getRepository(UserModel);
-                        const telegramProfileRepository =
-                            manager.getRepository(TelegramProfileModel);
-
-                        const existingUser = await this.getUserByTelegramId(
-                            telegramProfileData.telegram_id
+        try {
+            return await this.configuration.dataSource.transaction(
+                "SERIALIZABLE",
+                async manager => {
+                    if (!telegramProfileData.telegram_id) {
+                        throw new Error(
+                            "Telegram profile should include telegram_id"
                         );
+                    }
 
-                        if (existingUser) {
-                            const existingTelegramProfile =
-                                existingUser.telegramProfile!;
-                            await telegramProfileRepository.update(
-                                { id: existingTelegramProfile.id },
-                                {
-                                    ...existingTelegramProfile,
-                                    ...telegramProfileData,
-                                }
-                            );
-                            const updatedUser = await this.getUserById(
-                                existingUser.id
-                            );
-                            return updatedUser
-                                ? {
-                                      user: updatedUser,
-                                      isNewUser: false,
-                                  }
-                                : null;
-                        }
+                    const userRepository = manager.getRepository(UserModel);
+                    const telegramProfileRepository =
+                        manager.getRepository(TelegramProfileModel);
 
-                        const user = await userRepository.save({});
-                        await telegramProfileRepository.save({
-                            ...telegramProfileData,
-                            user,
-                        });
-                        const updatedUser = await this.getUserById(user.id);
+                    const existingUser = await this.getUserByTelegramId(
+                        telegramProfileData.telegram_id
+                    );
+
+                    if (existingUser) {
+                        const existingTelegramProfile =
+                            existingUser.telegramProfile!;
+                        await telegramProfileRepository.update(
+                            { id: existingTelegramProfile.id },
+                            {
+                                ...existingTelegramProfile,
+                                ...telegramProfileData,
+                            }
+                        );
+                        const updatedUser = await this.getUserById(
+                            existingUser.id
+                        );
                         return updatedUser
                             ? {
                                   user: updatedUser,
-                                  isNewUser: true,
+                                  isNewUser: false,
                               }
                             : null;
                     }
-                );
-            } catch (error) {
-                console.error(error);
-                return null;
-            }
-        });
+
+                    const user = await userRepository.save({});
+                    await telegramProfileRepository.save({
+                        ...telegramProfileData,
+                        user,
+                    });
+                    const updatedUser = await this.getUserById(user.id);
+                    return updatedUser
+                        ? {
+                              user: updatedUser,
+                              isNewUser: true,
+                          }
+                        : null;
+                }
+            );
+        } catch (error) {
+            console.error(error);
+            return null;
+        }
     }
 }
 

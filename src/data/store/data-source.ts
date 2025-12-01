@@ -2,6 +2,8 @@ import { DataSource } from "typeorm";
 import PATH from "../../app/path";
 import DATABASE_MIGRATIONS from "../migrations";
 import DATABASE_MODELS from "../models";
+import { DATABASE_QUEUE } from "../../tasks/instances";
+import overrideObjectMethod from "../../tasks/override";
 
 const DATA_SOURCE = new DataSource({
     type: "sqlite",
@@ -14,5 +16,9 @@ const DATA_SOURCE = new DataSource({
     migrationsTableName: "DatabaseMigrations",
     subscribers: [],
 });
+
+overrideObjectMethod(DATA_SOURCE, "transaction", async (source, ...args) =>
+    DATABASE_QUEUE.add(async () => source(...args))
+);
 
 export default DATA_SOURCE;
