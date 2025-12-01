@@ -11,7 +11,7 @@ import messageWithoutScene from "./middleware/message-without-scene";
 import overrideContextMethods from "./middleware/override-context-methods";
 import messageQueue from "./middleware/message-queue";
 import setupSession from "./middleware/setup-session";
-import STAGE from "./scenes";
+import stage from "./middleware/stage";
 
 async function start(): Promise<Telegraf<EngineContext>> {
     await STORE.initialize();
@@ -42,7 +42,7 @@ async function start(): Promise<Telegraf<EngineContext>> {
      * Проверяем, что пользователь не заблокирован.
      */
     bot.use(checkIfBlocked);
-    bot.use(STAGE.middleware());
+    bot.use(stage);
     bot.use(commandWithoutScene);
     bot.use(messageWithoutScene);
     bot.launch();
