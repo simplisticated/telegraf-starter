@@ -13,7 +13,9 @@ START_SCENE.enter(async (context, next) => {
 });
 START_SCENE.on(message(), async (context, next) => {
     await context.reply("Message received", {
-        reply_to_message_id: context.message.message_id,
+        reply_parameters: {
+            message_id: context.message.message_id,
+        },
     });
     await next();
 });

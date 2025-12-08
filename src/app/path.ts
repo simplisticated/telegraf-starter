@@ -8,6 +8,9 @@ const PATH = {
     database() {
         return path.resolve(this.dataFolder(), "database.sqlite");
     },
+    sessionDatabase() {
+        return path.resolve(this.dataFolder(), "session-database.sqlite");
+    },
 };
 
 export default PATH;
