@@ -1,16 +1,18 @@
-import { SessionManager } from "@simplisticated/telegraf-stored-session";
+import { session } from "telegraf";
 import { EngineContext } from "../session/context";
-import PATH from "../app/path";
-
-export const SESSION_MANAGER = new SessionManager({
-    type: "sqlite",
-    database: PATH.sessionDatabase(),
-});
+import { SessionStore } from "../session/store";
+import STORE from "../data/store/store";
 
 export default async function setupSession(
     context: EngineContext,
     next: () => Promise<void>
 ) {
-    await SESSION_MANAGER.initialize();
-    return SESSION_MANAGER.middleware(context, next);
+    const result = session({
+        store: new SessionStore({ dataStore: STORE }),
+        getSessionKey: c => {
+            if (!c.from || !c.chat) return undefined;
+            return `${c.from.id}:${c.chat.id}`;
+        },
+    });
+    return result(context, next);
 }

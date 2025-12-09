@@ -19,7 +19,6 @@
         "typeorm:migration:revert": "npm run typeorm:ts migration:revert -- -d ./src/data/store/data-source.ts"
     },
     "dependencies": {
-        "@simplisticated/telegraf-stored-session": "^0.1.0",
         "dotenv": "16.3.1",
         "reflect-metadata": "0.1.14",
         "sqlite3": "5.1.6",
