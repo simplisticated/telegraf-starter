@@ -2,7 +2,7 @@ import { EngineContext } from "../session/context";
 import { TELEGRAM_API_REQUEST_QUEUE } from "../tasks/instances";
 import overrideObjectMethod from "../tasks/override";
 
-export default async function overrideContextMethods(
+export default function overrideContextMethods(
     context: EngineContext,
     next: () => Promise<void>
 ) {
@@ -10,5 +10,5 @@ export default async function overrideContextMethods(
         TELEGRAM_API_REQUEST_QUEUE.add(() => source(...args))
     );
 
-    await next();
+    return next();
 }

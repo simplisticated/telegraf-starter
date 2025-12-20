@@ -3,7 +3,7 @@ import { EngineContext } from "../session/context";
 import { SessionStore } from "../session/store";
 import STORE from "../data/store/store";
 
-export default async function setupSession(
+export default function setupSession(
     context: EngineContext,
     next: () => Promise<void>
 ) {

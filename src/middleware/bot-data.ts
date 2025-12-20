@@ -6,8 +6,6 @@ export default async function botData(
     next: () => Promise<void>
 ) {
     const bot = context.botInfo;
-    console.log(JSON.stringify({ ...bot }, null, 2));
-
     await STORE.createOrUpdateBot({
         telegram_id: bot.id,
         username: bot.username,
@@ -18,5 +16,5 @@ export default async function botData(
 
     // Here you can implement sending user information to the backend or analytics.
 
-    await next();
+    return next();
 }

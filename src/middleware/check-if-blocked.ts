@@ -6,15 +6,13 @@ export default async function checkIfBlocked(
     next: () => Promise<void>
 ) {
     const sender = context.from;
+    if (!sender) return next();
 
-    if (sender) {
-        const isBlocked = await STORE.isBlocked(sender.id);
+    const isBlocked = await STORE.isBlocked(sender.id);
 
-        if (isBlocked) {
-            context.reply(`You are blocked from using this bot.`);
-            return;
-        }
+    if (isBlocked) {
+        return context.reply(`You are blocked from using this bot.`);
     }
 
-    await next();
+    return next();
 }

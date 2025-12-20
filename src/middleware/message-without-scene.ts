@@ -1,6 +1,6 @@
 import { EngineContext } from "../session/context";
 
-export default async function messageWithoutScene(
+export default function messageWithoutScene(
     context: EngineContext,
     next: () => Promise<void>
 ) {

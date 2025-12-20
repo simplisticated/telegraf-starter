@@ -1,6 +1,6 @@
 import { EngineContext } from "../session/context";
 
-async function handler(context: EngineContext, next: () => Promise<void>) {
+function handler(context: EngineContext, next: () => Promise<void>) {
     if (
         context.message &&
         "text" in context.message &&
@@ -10,9 +10,7 @@ async function handler(context: EngineContext, next: () => Promise<void>) {
         const commandFromMessage = segments[0].slice(1);
         switch (commandFromMessage) {
             case "start": {
-                await context.scene.leave();
-                await context.scene.enter("start-scene");
-                return;
+                return context.scene.enter("start-scene");
             }
             default: {
                 break;
@@ -20,7 +18,7 @@ async function handler(context: EngineContext, next: () => Promise<void>) {
         }
     }
 
-    await next();
+    return next();
 }
 
 export function commandWithoutScene(

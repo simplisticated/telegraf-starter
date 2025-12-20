@@ -13,5 +13,5 @@ export default async function messageCount(
         }));
     }
 
-    await next();
+    return next();
 }

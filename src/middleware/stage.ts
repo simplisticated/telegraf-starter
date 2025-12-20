@@ -1,7 +1,7 @@
 import { EngineContext } from "../session/context";
 import STAGE from "../scenes";
 
-export default async function stage(
+export default function stage(
     context: EngineContext,
     next: () => Promise<void>
 ) {
