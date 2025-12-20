@@ -81,7 +81,7 @@ export class Store {
 
     async createOrUpdateUser(
         userData: Partial<UserModel>
-    ): Promise<{ user: UserModel; isNewUser: boolean } | null> {
+    ): Promise<UserModel | null> {
         try {
             return await this.configuration.dataSource.transaction(
                 "SERIALIZABLE",
@@ -97,24 +97,10 @@ export class Store {
                             { id: existingUser.id },
                             userData
                         );
-                        const updatedUser = await this.getUserById(
-                            existingUser.id
-                        );
-                        return updatedUser
-                            ? {
-                                  user: updatedUser,
-                                  isNewUser: false,
-                              }
-                            : null;
+                        return this.getUserById(existingUser.id);
                     }
                     const user = await repository.save(userData);
-                    const updatedUser = await this.getUserById(user.id);
-                    return updatedUser
-                        ? {
-                              user: updatedUser,
-                              isNewUser: true,
-                          }
-                        : null;
+                    return this.getUserById(user.id);
                 }
             );
         } catch (error) {
@@ -366,68 +352,6 @@ export class Store {
                         ? {
                               telegramProfile,
                               isNewTelegramProfile: true,
-                          }
-                        : null;
-                }
-            );
-        } catch (error) {
-            console.error(error);
-            return null;
-        }
-    }
-
-    async createOrUpdateUserWithTelegramProfile(
-        telegramProfileData: Partial<TelegramProfileModel>
-    ): Promise<{ user: UserModel; isNewUser: boolean } | null> {
-        try {
-            return await this.configuration.dataSource.transaction(
-                "SERIALIZABLE",
-                async manager => {
-                    if (!telegramProfileData.telegram_id) {
-                        throw new Error(
-                            "Telegram profile should include telegram_id"
-                        );
-                    }
-
-                    const userRepository = manager.getRepository(UserModel);
-                    const telegramProfileRepository =
-                        manager.getRepository(TelegramProfileModel);
-
-                    const existingUser = await this.getUserByTelegramId(
-                        telegramProfileData.telegram_id
-                    );
-
-                    if (existingUser) {
-                        const existingTelegramProfile =
-                            existingUser.telegramProfile!;
-                        await telegramProfileRepository.update(
-                            { id: existingTelegramProfile.id },
-                            {
-                                ...existingTelegramProfile,
-                                ...telegramProfileData,
-                            }
-                        );
-                        const updatedUser = await this.getUserById(
-                            existingUser.id
-                        );
-                        return updatedUser
-                            ? {
-                                  user: updatedUser,
-                                  isNewUser: false,
-                              }
-                            : null;
-                    }
-
-                    const user = await userRepository.save({});
-                    await telegramProfileRepository.save({
-                        ...telegramProfileData,
-                        user,
-                    });
-                    const updatedUser = await this.getUserById(user.id);
-                    return updatedUser
-                        ? {
-                              user: updatedUser,
-                              isNewUser: true,
                           }
                         : null;
                 }

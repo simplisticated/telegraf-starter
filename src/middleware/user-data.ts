@@ -23,14 +23,13 @@ export default async function userData(
     const bot = await STORE.getBotByTelegramId(context.botInfo.id);
     if (!bot) return next();
 
-    const user = await (async () => {
+    const user = await (() => {
         const existingUser = STORE.getUserByTelegramId(sender.id);
         if (!existingUser) {
-            const result = await STORE.createOrUpdateUser({
+            return STORE.createOrUpdateUser({
                 telegramProfile: telegramProfileResult.telegramProfile,
                 bot,
             });
-            return result?.user ?? null;
         }
         return existingUser;
     })();
