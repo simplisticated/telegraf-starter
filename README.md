@@ -22,7 +22,7 @@ npm install
 For starting the server in development mode, use the following command:
 
 ```
-npm run start:dev
+npm run dev
 ```
 
 To run the server in production mode, follow these steps:
@@ -79,13 +79,13 @@ after running the `build` command.
 npm run start
 ```
 
--   `start:dev`
+-   `dev`
 
 Runs the app in development mode using `ts-node` directly with the TypeScript
 source files. Useful for quick development without building.
 
 ```
-npm run start:dev
+npm run dev
 ```
 
 ---
@@ -170,8 +170,8 @@ if (ENV.APP_ENVIRONMENT === AppEnvironment.production) {
 
 ## Database
 
-This project uses SQLite as its database engine, managed through TypeORM. The
-database file is located at
+This project uses SQLite by default to keep the starter lightweight and easy to
+deploy. The data is managed through TypeORM. The database file is located at
 
 ```
 data/<APP_ENVIRONMENT>/database.sqlite
@@ -189,44 +189,154 @@ object, which offers essential methods for reading and writing data models.
 
 ## User Management
 
-This project uses two main models to manage users: [UserModel](#usermodel) and
-[TelegramProfileModel](#telegramprofilemodel).
+This project uses a clear separation of models to manage users in an environment
+with multiple bots. User-related data is distributed across several models, each
+responsible for a specific level of abstraction.
 
-### `UserModel`
+The core models involved are:
 
-Represents a platform user. Key fields include:
+-   `BotModel` — represents a Telegram bot managed by the platform;
+-   `TelegramProfileModel` — represents a Telegram account;
+-   `UserModel` — represents a user in the context of a specific bot;
+-   `SessionModel` — stores session data managed by Telegraf.
 
--   `id` - unique user identifier;
--   `is_administrator` - flag indicating whether the user is an administrator
-    (default is `false`);
--   `is_blocked` - user block flag (default is `false`).
+### Interaction between `BotModel`, `UserModel`, and `TelegramProfileModel`
 
-To make a user an administrator: set `is_administrator = true` in the database.
+The relationship between the models is structured as follows:
 
-To check if the user is administrator, use:
+-   A bot (`BotModel`) can have many users.
+-   A Telegram profile (`TelegramProfileModel`) represents a single Telegram
+    account and can participate in multiple bots.
+-   A User (`UserModel`) links a Telegram profile to a specific bot and stores
+    bot-specific state and permissions.
 
-```typescript
-const isAdministrator = await STORE.isAdministrator(telegramId);
-```
+In other words, a `UserModel` record represents the combination of:
 
-To block a user: set `is_blocked = true` in the database.
+-   one Telegram account (`TelegramProfileModel`)
+-   one bot (`BotModel`)
 
-To check if the user is blocked, use:
+This design allows the same Telegram user to interact with multiple bots while
+having:
 
-```typescript
-const isBlocked = await STORE.isBlocked(telegramId);
-```
+-   different roles,
+-   different permissions,
+-   different state
+
+in each bot independently.
+
+### `BotModel`
+
+`BotModel` represents a Telegram bot registered in the platform.
+
+It stores data received from the Telegram Bot API, such as:
+
+-   `telegram_id` — unique Telegram bot ID;
+-   `username`;
+-   bot capability flags (e.g. group support, inline queries).
+
+Each bot may be associated with multiple `UserModel` records, one for each
+Telegram profile interacting with the bot.
+
+The bot data is [automatically updated](./src/middleware/bot-data.ts) whenever a
+Telegram update is received, keeping it in sync with the latest Telegram state.
 
 ### `TelegramProfileModel`
 
-Associated with `UserModel`, this model stores Telegram-specific data:
+`TelegramProfileModel` represents a Telegram account, independent of any
+specific bot.
 
--   `telegram_id` - the user’s Telegram ID;
--   `username` - Telegram username;
--   other data received from the Telegram Bot API.
+It stores Telegram-level data, including:
 
-The data in `TelegramProfileModel` is automatically updated every time the user
-sends a message, keeping the profile information in the database up to date.
+-   `telegram_id` — unique Telegram user or bot ID;
+-   `is_bot` flag;
+-   `first_name`, `last_name`, `username`;
+-   `language_code`;
+-   `is_premium` flag;
+-   other data provided by the Telegram Bot API.
+
+A single `TelegramProfileModel` may be associated with multiple UserModel
+records — one per bot. This ensures that Telegram account data is stored once
+and reused across all bots.
+
+The profile data is [automatically updated](./src/middleware/user-data.ts)
+whenever a Telegram update is received, keeping it in sync with the latest
+Telegram state.
+
+### `UserModel`
+
+`UserModel` represents a user within a specific bot.
+
+It contains platform-level and bot-specific data, such as:
+
+-   `is_administrator` — whether the user has administrative privileges in the
+    bot;
+-   `is_blocked` — whether the user is
+    [blocked](./src/middleware/check-if-blocked.ts) in the bot;
+-   references to the associated `BotModel` and `TelegramProfileModel`.
+
+Administrative privileges and blocking are bot-specific and do not affect the
+user in other bots.
+
+### `SessionModel`
+
+`SessionModel` is used to store session data for Telegram updates.
+
+This model is intentionally kept generic and does not enforce any schema on the
+stored data. The contents of the state field are fully managed by the Telegraf
+library via its
+[SessionStore](https://github.com/telegraf/telegraf/blob/v4/src/session.ts)
+mechanism.
+
+The project treats session data as opaque storage:
+
+-   it persists session state,
+-   but does not modify its structure.
+
+This approach ensures full compatibility with Telegraf’s session and scene
+system, while keeping session management separated from the platform’s domain
+models.
+
+## Data Management
+
+All database interactions in the project are performed through the
+[STORE](./src/data/store/store.ts) object.
+
+`STORE` acts as a high-level abstraction over TypeORM and provides a simple,
+stable API for working with the project’s data models. This allows you to manage
+users and bots without interacting with the database or ORM directly.
+
+### Common User Operations
+
+#### Providing administrator privileges
+
+To make a user an administrator for a specific bot, set
+`is_administrator = true` for the corresponding user record.
+
+Example:
+
+```typescript
+await STORE.setAdministrator(telegramId, botId, true);
+```
+
+To check whether a user is an administrator:
+
+```typescript
+await STORE.isAdministrator(telegramId, botId);
+```
+
+#### Blocking users
+
+To block a user in a specific bot, set `is_blocked = true`:
+
+```typescript
+await STORE.setBlocked(telegramId, botId, true);
+```
+
+To check whether a user is blocked:
+
+```typescript
+const isBlocked = await STORE.isBlocked(telegramId, botId);
+```
 
 ## Contributing
 

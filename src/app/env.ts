@@ -49,8 +49,8 @@ const ENV = {
     })(),
     TELEGRAM_TOKEN: (() => {
         const name = "TELEGRAM_TOKEN";
-        const value = getString(name);
-        if (!value) {
+        const value = getStringList(name);
+        if (!value || !value.length) {
             throw new Error(`${name} not found`);
         }
         return value;

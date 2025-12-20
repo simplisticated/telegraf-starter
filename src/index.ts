@@ -14,10 +14,8 @@ import setupSession from "./middleware/setup-session";
 import stage from "./middleware/stage";
 import botData from "./middleware/bot-data";
 
-async function start(): Promise<Telegraf<EngineContext>> {
-    await STORE.initialize();
-
-    const bot = new Telegraf<EngineContext>(ENV.TELEGRAM_TOKEN);
+function createBot(token: string) {
+    const bot = new Telegraf<EngineContext>(token);
     /**
      * Добавляем обработку сообщения в очередь с целью контроля нагрузки на сервер.
      */
@@ -50,8 +48,14 @@ async function start(): Promise<Telegraf<EngineContext>> {
     bot.use(stage);
     bot.use(commandWithoutScene);
     bot.use(messageWithoutScene);
-    bot.launch();
     return bot;
+}
+
+async function start(): Promise<any> {
+    await STORE.initialize();
+
+    const botList = ENV.TELEGRAM_TOKEN.map(createBot);
+    return Promise.allSettled(botList.map(bot => bot.launch()));
 }
 
 start();

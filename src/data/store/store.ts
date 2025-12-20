@@ -38,7 +38,7 @@ export class Store {
         }
     }
 
-    async getUserByTelegramId(telegramId: number) {
+    async getUserByTelegramId(telegramId: number, botId: number) {
         try {
             const user = await this.configuration.dataSource
                 .getRepository(UserModel)
@@ -47,9 +47,13 @@ export class Store {
                         telegramProfile: {
                             telegram_id: telegramId,
                         },
+                        bot: {
+                            telegram_id: botId,
+                        },
                     },
                     relations: {
                         telegramProfile: true,
+                        bot: true,
                     },
                 });
             return user;
@@ -59,9 +63,9 @@ export class Store {
         }
     }
 
-    async isAdministrator(telegramId: number): Promise<boolean> {
+    async isAdministrator(telegramId: number, botId: number): Promise<boolean> {
         try {
-            const user = await this.getUserByTelegramId(telegramId);
+            const user = await this.getUserByTelegramId(telegramId, botId);
             return user?.is_administrator ?? false;
         } catch (error) {
             console.error(error);
@@ -69,10 +73,96 @@ export class Store {
         }
     }
 
-    async isBlocked(telegramId: number): Promise<boolean> {
+    async setAdministrator(
+        telegramId: number,
+        botId: number,
+        isAdministrator: boolean
+    ): Promise<boolean> {
         try {
-            const user = await this.getUserByTelegramId(telegramId);
+            return await this.configuration.dataSource.transaction(
+                "SERIALIZABLE",
+                async manager => {
+                    const repository = manager.getRepository(UserModel);
+                    const user = await repository.findOne({
+                        where: {
+                            telegramProfile: {
+                                telegram_id: telegramId,
+                            },
+                            bot: {
+                                telegram_id: botId,
+                            },
+                        },
+                        relations: {
+                            telegramProfile: true,
+                            bot: true,
+                        },
+                    });
+                    if (!user) return false;
+                    if (user.is_administrator === isAdministrator) return true;
+                    await repository.update(
+                        { id: user.id },
+                        { is_administrator: isAdministrator }
+                    );
+                    const updatedUser = await repository.findOneBy({
+                        id: user.id,
+                    });
+                    if (!updatedUser) return false;
+                    return updatedUser.is_administrator === isAdministrator;
+                }
+            );
+        } catch (error) {
+            console.error(error);
+            return false;
+        }
+    }
+
+    async isBlocked(telegramId: number, botId: number): Promise<boolean> {
+        try {
+            const user = await this.getUserByTelegramId(telegramId, botId);
             return user?.is_blocked ?? false;
+        } catch (error) {
+            console.error(error);
+            return false;
+        }
+    }
+
+    async setBlocked(
+        telegramId: number,
+        botId: number,
+        isBlocked: boolean
+    ): Promise<boolean> {
+        try {
+            return await this.configuration.dataSource.transaction(
+                "SERIALIZABLE",
+                async manager => {
+                    const repository = manager.getRepository(UserModel);
+                    const user = await repository.findOne({
+                        where: {
+                            telegramProfile: {
+                                telegram_id: telegramId,
+                            },
+                            bot: {
+                                telegram_id: botId,
+                            },
+                        },
+                        relations: {
+                            telegramProfile: true,
+                            bot: true,
+                        },
+                    });
+                    if (!user) return false;
+                    if (user.is_blocked === isBlocked) return true;
+                    await repository.update(
+                        { id: user.id },
+                        { is_blocked: isBlocked }
+                    );
+                    const updatedUser = await repository.findOneBy({
+                        id: user.id,
+                    });
+                    if (!updatedUser) return false;
+                    return updatedUser.is_blocked === isBlocked;
+                }
+            );
         } catch (error) {
             console.error(error);
             return false;
