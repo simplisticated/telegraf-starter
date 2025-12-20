@@ -4,6 +4,7 @@ import DATA_SOURCE from "./data-source";
 import { UserState } from "../types/user-state";
 import UserModel from "../models/user";
 import SessionModel from "../models/session";
+import BotModel from "../models/bot";
 
 export class Store {
     constructor(private configuration: { dataSource: DataSource }) {}
@@ -149,6 +150,69 @@ export class Store {
                     );
                     const updatedUser = await this.getUserById(user.id);
                     return updatedUser;
+                }
+            );
+        } catch (error) {
+            console.error(error);
+            return null;
+        }
+    }
+
+    async getBotById(id: number) {
+        try {
+            const bot = await this.configuration.dataSource
+                .getRepository(BotModel)
+                .findOne({
+                    where: {
+                        id,
+                    },
+                });
+            return bot;
+        } catch (error) {
+            console.error(error);
+            return null;
+        }
+    }
+
+    async getBotByTelegramId(telegramId: number) {
+        try {
+            const bot = await this.configuration.dataSource
+                .getRepository(BotModel)
+                .findOne({
+                    where: {
+                        telegram_id: telegramId,
+                    },
+                });
+            return bot;
+        } catch (error) {
+            console.error(error);
+            return null;
+        }
+    }
+
+    async createOrUpdateBot(
+        botData: Partial<BotModel>
+    ): Promise<BotModel | null> {
+        try {
+            return await this.configuration.dataSource.transaction(
+                "SERIALIZABLE",
+                async manager => {
+                    if (!botData.telegram_id) {
+                        throw new Error("Bot should include telegram_id");
+                    }
+                    const repository = manager.getRepository(BotModel);
+                    const existingBot = await this.getBotByTelegramId(
+                        botData.telegram_id
+                    );
+                    if (existingBot) {
+                        await repository.update(
+                            { id: existingBot.id },
+                            botData
+                        );
+                        return this.getBotById(existingBot.id);
+                    }
+                    const bot = await repository.save(botData);
+                    return this.getBotById(bot.id);
                 }
             );
         } catch (error) {

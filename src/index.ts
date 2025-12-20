@@ -12,6 +12,7 @@ import overrideContextMethods from "./middleware/override-context-methods";
 import messageQueue from "./middleware/message-queue";
 import setupSession from "./middleware/setup-session";
 import stage from "./middleware/stage";
+import botData from "./middleware/bot-data";
 
 async function start(): Promise<Telegraf<EngineContext>> {
     await STORE.initialize();
@@ -30,6 +31,10 @@ async function start(): Promise<Telegraf<EngineContext>> {
      * Настройка сессии для пользователя.
      */
     bot.use(setupSession);
+    /**
+     * Обработка данных бота.
+     */
+    bot.use(botData);
     /**
      * Обработка пользовательских данных: сохранение информации о пользователе в базу.
      */

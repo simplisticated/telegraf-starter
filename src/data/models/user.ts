@@ -3,12 +3,14 @@ import {
     Column,
     PrimaryGeneratedColumn,
     JoinColumn,
-    OneToOne,
     CreateDateColumn,
     UpdateDateColumn,
+    ManyToOne,
+    BeforeInsert,
 } from "typeorm";
 import { createUserState, UserState } from "../types/user-state";
 import TelegramProfileModel from "./telegram-profile";
+import BotModel from "./bot";
 
 @Entity({
     name: "User",
@@ -46,14 +48,29 @@ export default class UserModel {
     @Column({
         type: "json",
         nullable: false,
-        default: JSON.stringify(createUserState()),
     })
     state!: UserState;
 
-    @OneToOne(() => TelegramProfileModel, {
-        cascade: true,
-        nullable: true,
+    @ManyToOne(() => BotModel, bot => bot.users, {
+        nullable: false,
     })
-    @JoinColumn()
+    @JoinColumn({
+        name: "bot_id",
+    })
+    bot?: BotModel;
+
+    @ManyToOne(() => TelegramProfileModel, {
+        nullable: false,
+    })
+    @JoinColumn({
+        name: "telegram_profile_id",
+    })
     telegramProfile?: TelegramProfileModel;
+
+    @BeforeInsert()
+    private initialize() {
+        if (!this.state) {
+            this.state = createUserState();
+        }
+    }
 }

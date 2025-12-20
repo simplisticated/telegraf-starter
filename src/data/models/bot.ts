@@ -9,9 +9,9 @@ import {
 import UserModel from "./user";
 
 @Entity({
-    name: "TelegramProfile",
+    name: "Bot",
 })
-export default class TelegramProfileModel {
+export default class BotModel {
     @PrimaryGeneratedColumn()
     id!: number;
 
@@ -35,42 +35,29 @@ export default class TelegramProfileModel {
     telegram_id!: number;
 
     @Column({
-        type: "boolean",
-        nullable: false,
-    })
-    is_bot!: boolean;
-
-    @Column({
         type: "text",
         nullable: false,
     })
-    first_name!: string;
-
-    @Column({
-        type: "text",
-        nullable: true,
-    })
-    last_name?: string;
-
-    @Column({
-        type: "text",
-        nullable: true,
-    })
-    username?: string;
-
-    @Column({
-        type: "text",
-        nullable: true,
-    })
-    language_code?: string;
+    username!: string;
 
     @Column({
         type: "boolean",
         nullable: false,
-        default: false,
     })
-    is_premium!: boolean;
+    can_join_groups!: boolean;
 
-    @OneToMany(() => UserModel, user => user.telegramProfile)
+    @Column({
+        type: "boolean",
+        nullable: false,
+    })
+    can_read_all_group_messages!: boolean;
+
+    @Column({
+        type: "boolean",
+        nullable: false,
+    })
+    supports_inline_queries!: boolean;
+
+    @OneToMany(() => UserModel, user => user.bot)
     users!: UserModel[];
 }

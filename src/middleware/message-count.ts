@@ -1,9 +1,8 @@
-import { Context } from "telegraf";
-import { Update } from "telegraf/typings/core/types/typegram";
 import STORE from "../data/store/store";
+import { EngineContext } from "../session/context";
 
 export default async function messageCount(
-    context: Context<Update>,
+    context: EngineContext,
     next: () => Promise<void>
 ) {
     const sender = context.from;
