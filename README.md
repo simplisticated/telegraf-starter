@@ -19,6 +19,16 @@ required dependencies:
 npm install
 ```
 
+Next, set up the [environment variables](#environment-variables): create a
+`.env` file and add the required values.
+
+Then, run the database migrations (this will create the SQLite database on the
+first run):
+
+```
+npm run typeorm:migration:run
+```
+
 For starting the server in development mode, use the following command:
 
 ```
