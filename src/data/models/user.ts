@@ -67,9 +67,6 @@ export default class UserModel {
     })
     telegramProfile!: TelegramProfileModel;
 
-    /* @OneToMany(() => UpdateModel, update => update.user)
-    updates!: UpdateModel[]; */
-
     @BeforeInsert()
     private initialize() {
         if (!this.state) {
