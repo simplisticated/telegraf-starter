@@ -9,7 +9,7 @@ import checkIfBlocked from "./middleware/check-if-blocked";
 import { commandWithoutScene } from "./middleware/command";
 import messageWithoutScene from "./middleware/message-without-scene";
 import overrideContextMethods from "./middleware/override-context-methods";
-import messageQueue from "./middleware/message-queue";
+import queue from "./middleware/queue";
 import setupSession from "./middleware/setup-session";
 import stage from "./middleware/stage";
 import botData from "./middleware/bot-data";
@@ -19,7 +19,7 @@ function createBot(token: string) {
     /**
      * Добавляем обработку сообщения в очередь с целью контроля нагрузки на сервер.
      */
-    bot.use(messageQueue);
+    bot.use(queue);
     /**
      * Переопределяем методы контекста.
      * Это нужно для контроля количества запросов к серверу Telegram.

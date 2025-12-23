@@ -5,12 +5,18 @@ export default async function messageCount(
     context: EngineContext,
     next: () => Promise<void>
 ) {
+    if (context.updateType !== "message") return next();
+
     const sender = context.from;
 
     if (sender) {
-        await STORE.updateUserState(sender.id, previousState => ({
-            messageCount: (previousState.messageCount ?? 0) + 1,
-        }));
+        await STORE.updateUserState(
+            sender.id,
+            context.botInfo.id,
+            previousState => ({
+                messageCount: (previousState.messageCount ?? 0) + 1,
+            })
+        );
     }
 
     return next();

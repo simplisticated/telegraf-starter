@@ -201,6 +201,7 @@ export class Store {
 
     async updateUserState(
         telegramId: number,
+        botId: number,
         handler: (previousState: UserState) => Partial<UserState>
     ): Promise<UserModel | null> {
         try {
@@ -212,6 +213,9 @@ export class Store {
                         where: {
                             telegramProfile: {
                                 telegram_id: telegramId,
+                            },
+                            bot: {
+                                telegram_id: botId,
                             },
                         },
                     });

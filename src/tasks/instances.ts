@@ -6,7 +6,7 @@ export const DATABASE_QUEUE = new Queue({
     start: "immediately",
 });
 
-export const INCOMING_MESSAGE_QUEUE = new Queue({
+export const INCOMING_UPDATE_QUEUE = new Queue({
     timeIntervalBetweenIterations: 1000,
     numberOfBlocksToHandleDuringIteration: 5,
     start: "immediately",

@@ -6,8 +6,8 @@ export default function messageWithoutScene(
 ) {
     if (
         !context.scene.current &&
-        context.message &&
-        "text" in context.message
+        context.updateType === "message" &&
+        context.message !== undefined
     ) {
         return context.scene.enter("start-scene");
     }
