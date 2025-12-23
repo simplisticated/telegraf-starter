@@ -15,6 +15,7 @@ import stage from "./middleware/stage";
 import botData from "./middleware/bot-data";
 import { setupConsole } from "./app/console";
 import telegramProfileData from "./middleware/telegram-profile-data";
+import messageTimestamp from "./middleware/message-timestamp";
 
 function createBot(token: string) {
     const bot = new Telegraf<EngineContext>(token);
@@ -51,6 +52,10 @@ function createBot(token: string) {
      * Проверяем, что пользователь не заблокирован.
      */
     bot.use(checkIfBlocked);
+    /**
+     * Проверяем дату отправки сообщения.
+     */
+    bot.use(messageTimestamp);
     bot.use(stage);
     bot.use(commandWithoutScene);
     bot.use(messageWithoutScene);
