@@ -5,6 +5,7 @@ import { UserState } from "../types/user-state";
 import UserModel from "../models/user";
 import SessionModel from "../models/session";
 import BotModel from "../models/bot";
+import LogModel from "../models/log";
 
 export class Store {
     constructor(private configuration: { dataSource: DataSource }) {}
@@ -189,7 +190,9 @@ export class Store {
                         );
                         return this.getUserById(existingUser.id);
                     }
-                    const user = await repository.save(userData);
+                    const user = await repository.save(
+                        repository.create(userData)
+                    );
                     return this.getUserById(user.id);
                 }
             );
@@ -291,7 +294,9 @@ export class Store {
                         );
                         return this.getBotById(existingBot.id);
                     }
-                    const bot = await repository.save(botData);
+                    const bot = await repository.save(
+                        repository.create(botData)
+                    );
                     return this.getBotById(bot.id);
                 }
             );
@@ -340,7 +345,9 @@ export class Store {
                             sessionData.session_id
                         );
                     }
-                    const session = await repository.save(sessionData);
+                    const session = await repository.save(
+                        repository.create(sessionData)
+                    );
                     if (!session) return null;
                     const updatedSession = await this.getSessionBySessionId(
                         session.session_id
@@ -448,6 +455,40 @@ export class Store {
                               isNewTelegramProfile: true,
                           }
                         : null;
+                }
+            );
+        } catch (error) {
+            console.error(error);
+            return null;
+        }
+    }
+
+    async getLogById(id: number): Promise<LogModel | null> {
+        try {
+            const user = await this.configuration.dataSource
+                .getRepository(LogModel)
+                .findOne({
+                    where: {
+                        id,
+                    },
+                });
+            return user;
+        } catch (error) {
+            console.error(error);
+            return null;
+        }
+    }
+
+    async createLog(logData: Partial<LogModel>): Promise<LogModel | null> {
+        try {
+            return await this.configuration.dataSource.transaction(
+                "SERIALIZABLE",
+                async manager => {
+                    const repository = manager.getRepository(LogModel);
+                    const log = await repository.save(
+                        repository.create(logData)
+                    );
+                    return this.getLogById(log.id);
                 }
             );
         } catch (error) {

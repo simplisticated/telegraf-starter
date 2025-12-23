@@ -13,6 +13,8 @@ import queue from "./middleware/queue";
 import setupSession from "./middleware/setup-session";
 import stage from "./middleware/stage";
 import botData from "./middleware/bot-data";
+import { setupConsole } from "./app/console";
+import telegramProfileData from "./middleware/telegram-profile-data";
 
 function createBot(token: string) {
     const bot = new Telegraf<EngineContext>(token);
@@ -36,6 +38,10 @@ function createBot(token: string) {
     /**
      * Обработка пользовательских данных: сохранение информации о пользователе в базу.
      */
+    bot.use(telegramProfileData);
+    /**
+     * Создание экземпляра UserModel.
+     */
     bot.use(userData);
     /**
      * Подсчет количества сообщений от пользователя.
@@ -52,6 +58,20 @@ function createBot(token: string) {
 }
 
 async function start(): Promise<any> {
+    setupConsole({
+        outputTimestamp: true,
+        timezone: ENV.LOG_TIMEZONE,
+        handleMessage: async (message, level) => {
+            await STORE.createLog({
+                level,
+                message: message ?? "",
+            });
+
+            // Здесь можно реализовать отправку сообщений в бэкенд. Пример:
+            // if (level === "error") send(message)
+        },
+    });
+
     await STORE.initialize();
 
     const botList = ENV.TELEGRAM_TOKEN.map(createBot);

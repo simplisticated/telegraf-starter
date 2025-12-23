@@ -23,13 +23,13 @@ export default class UserModel {
         type: "datetime",
         nullable: false,
     })
-    creation_date!: Date;
+    created!: Date;
 
     @UpdateDateColumn({
         type: "datetime",
         nullable: true,
     })
-    modification_date?: Date;
+    updated?: Date;
 
     @Column({
         type: "boolean",
@@ -57,7 +57,7 @@ export default class UserModel {
     @JoinColumn({
         name: "bot_id",
     })
-    bot?: BotModel;
+    bot!: BotModel;
 
     @ManyToOne(() => TelegramProfileModel, {
         nullable: false,
@@ -65,7 +65,10 @@ export default class UserModel {
     @JoinColumn({
         name: "telegram_profile_id",
     })
-    telegramProfile?: TelegramProfileModel;
+    telegramProfile!: TelegramProfileModel;
+
+    /* @OneToMany(() => UpdateModel, update => update.user)
+    updates!: UpdateModel[]; */
 
     @BeforeInsert()
     private initialize() {

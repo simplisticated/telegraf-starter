@@ -1,24 +1,18 @@
 import {
     Entity,
-    Column,
     PrimaryGeneratedColumn,
     CreateDateColumn,
     UpdateDateColumn,
+    OneToOne,
 } from "typeorm";
+import UpdateModel from "./update";
 
 @Entity({
-    name: "Session",
+    name: "Message",
 })
-export default class SessionModel {
+export default class MessageModel {
     @PrimaryGeneratedColumn()
     id!: number;
-
-    @Column({
-        type: "text",
-        nullable: false,
-        unique: true,
-    })
-    session_id!: string;
 
     @CreateDateColumn({
         type: "datetime",
@@ -32,9 +26,8 @@ export default class SessionModel {
     })
     updated?: Date;
 
-    @Column({
-        type: "json",
-        nullable: true,
+    @OneToOne(() => UpdateModel, update => update.message, {
+        nullable: false,
     })
-    state?: any;
+    update!: UpdateModel;
 }

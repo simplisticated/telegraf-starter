@@ -19,13 +19,13 @@ export default class BotModel {
         type: "datetime",
         nullable: false,
     })
-    creation_date!: Date;
+    created!: Date;
 
     @UpdateDateColumn({
         type: "datetime",
         nullable: true,
     })
-    modification_date?: Date;
+    updated?: Date;
 
     @Column({
         type: "integer",

@@ -72,6 +72,7 @@ export default class Queue {
                     blockContainer.completion(result, null);
                 } catch (error) {
                     blockContainer.completion(null, error);
+                    console.error(error);
                 } finally {
                     this.remove(blockContainer.id);
                 }

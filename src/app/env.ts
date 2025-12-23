@@ -55,6 +55,7 @@ const ENV = {
         }
         return value;
     })(),
+    LOG_TIMEZONE: getString("LOG_TIMEZONE") ?? "UTC",
 };
 
 export default ENV;
