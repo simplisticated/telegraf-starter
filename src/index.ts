@@ -22,12 +22,22 @@ function createBot(token: string) {
     /**
      * Добавляем обработку сообщения в очередь с целью контроля нагрузки на сервер.
      */
-    bot.use(queue);
+    bot.use(
+        queue({
+            private: true,
+            group: true,
+        })
+    );
     /**
      * Переопределяем методы контекста.
      * Это нужно для контроля количества запросов к серверу Telegram.
      */
-    bot.use(overrideContextMethods);
+    bot.use(
+        overrideContextMethods({
+            private: true,
+            group: true,
+        })
+    );
     /**
      * Настройка сессии для пользователя.
      */

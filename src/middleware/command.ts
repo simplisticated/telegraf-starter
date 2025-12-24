@@ -1,6 +1,9 @@
+import { isPrivate } from "../app/context";
 import { EngineContext } from "../session/context";
 
 function handler(context: EngineContext, next: () => Promise<void>) {
+    if (!isPrivate(context)) return next();
+
     if (
         context.message &&
         "text" in context.message &&
