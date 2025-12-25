@@ -24,7 +24,7 @@ function handler(context: EngineContext, next: () => Promise<void>) {
     return next();
 }
 
-export function commandWithoutScene(
+export function privateCommandWithoutScene(
     context: EngineContext,
     next: () => Promise<void>
 ) {
@@ -34,7 +34,7 @@ export function commandWithoutScene(
     return next();
 }
 
-export function commandWithActiveScene(
+export function privateCommandWithActiveScene(
     context: EngineContext,
     next: () => Promise<void>
 ) {
