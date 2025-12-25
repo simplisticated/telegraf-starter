@@ -13,8 +13,5 @@ export default async function botData(
         can_read_all_group_messages: bot.can_read_all_group_messages,
         supports_inline_queries: bot.supports_inline_queries,
     });
-
-    // Here you can implement sending user information to the backend or analytics.
-
     return next();
 }

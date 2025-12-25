@@ -1,4 +1,3 @@
-import { isPrivate } from "../app/context";
 import STORE from "../data/store/store";
 import { EngineContext } from "../session/context";
 
@@ -6,8 +5,6 @@ export default async function checkIfBlocked(
     context: EngineContext,
     next: () => Promise<void>
 ) {
-    if (!isPrivate(context)) return next();
-
     const sender = context.from;
     if (!sender) return next();
 

@@ -16,28 +16,19 @@ import botData from "./middleware/bot-data";
 import { setupConsole } from "./app/console";
 import telegramProfileData from "./middleware/telegram-profile-data";
 import messageTimestamp from "./middleware/message-timestamp";
+import onlyPrivate from "./middleware/only-private";
 
 function createBot(token: string) {
     const bot = new Telegraf<EngineContext>(token);
     /**
      * Добавляем обработку сообщения в очередь с целью контроля нагрузки на сервер.
      */
-    bot.use(
-        queue({
-            private: true,
-            group: true,
-        })
-    );
+    bot.use(queue);
     /**
      * Переопределяем методы контекста.
      * Это нужно для контроля количества запросов к серверу Telegram.
      */
-    bot.use(
-        overrideContextMethods({
-            private: true,
-            group: true,
-        })
-    );
+    bot.use(overrideContextMethods);
     /**
      * Настройка сессии для пользователя.
      */
@@ -61,11 +52,11 @@ function createBot(token: string) {
     /**
      * Проверяем, что пользователь не заблокирован.
      */
-    bot.use(checkIfBlocked);
+    bot.use(onlyPrivate(checkIfBlocked));
     /**
      * Проверяем дату отправки сообщения.
      */
-    bot.use(messageTimestamp);
+    bot.use(onlyPrivate(messageTimestamp));
     bot.use(stage);
     bot.use(commandWithoutScene);
     bot.use(messageWithoutScene);
