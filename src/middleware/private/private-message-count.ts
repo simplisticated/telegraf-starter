@@ -2,7 +2,7 @@ import { isPrivate } from "../../app/context";
 import STORE from "../../data/store/store";
 import { EngineContext } from "../../session/context";
 
-export default async function messageCount(
+export default async function privateMessageCount(
     context: EngineContext,
     next: () => Promise<void>
 ) {
@@ -16,7 +16,8 @@ export default async function messageCount(
             sender.id,
             context.botInfo.id,
             previousState => ({
-                messageCount: (previousState.messageCount ?? 0) + 1,
+                privateMessageCount:
+                    (previousState.privateMessageCount ?? 0) + 1,
             })
         );
     }

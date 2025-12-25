@@ -1,9 +1,9 @@
 export type UserState = {
-    messageCount: number;
+    privateMessageCount: number;
 };
 
 export function createUserState(): UserState {
     return {
-        messageCount: 0,
+        privateMessageCount: 0,
     };
 }

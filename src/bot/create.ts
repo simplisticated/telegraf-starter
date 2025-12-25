@@ -7,7 +7,7 @@ import setupSession from "../middleware/common/setup-session";
 import telegramProfileData from "../middleware/common/telegram-profile-data";
 import userData from "../middleware/common/user-data";
 import { commandWithoutScene } from "../middleware/private/command";
-import messageCount from "../middleware/private/message-count";
+import privateMessageCount from "../middleware/private/private-message-count";
 import messageWithoutScene from "../middleware/private/message-without-scene";
 import stage from "../middleware/private/stage";
 import { EngineContext } from "../session/context";
@@ -44,7 +44,7 @@ export function createBot(token: string): Telegraf<EngineContext> {
     /**
      * Подсчет количества сообщений от пользователя.
      */
-    bot.use(messageCount);
+    bot.use(privateMessageCount);
     /**
      * Проверяем, что пользователь не заблокирован.
      */
