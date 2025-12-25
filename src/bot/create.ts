@@ -6,9 +6,9 @@ import overrideContextMethods from "../middleware/common/override-context-method
 import setupSession from "../middleware/common/setup-session";
 import telegramProfileData from "../middleware/common/telegram-profile-data";
 import userData from "../middleware/common/user-data";
-import { privateCommandWithoutScene } from "../middleware/private/private-command";
+import privateCommand from "../middleware/private/private-command";
 import privateMessageCount from "../middleware/private/private-message-count";
-import messageWithoutScene from "../middleware/private/message-without-scene";
+import privateMessageWithoutScene from "../middleware/private/private-message-without-scene";
 import stage from "../middleware/private/stage";
 import { EngineContext } from "../session/context";
 import queue from "../middleware/common/queue";
@@ -50,17 +50,17 @@ export function createBot(token: string): Telegraf<EngineContext> {
      */
     bot.use(onlyPrivate(checkIfBlocked));
     /**
-     * На этом этапе срабатывают middleware из текущей сцены.
+     * На этом этапе выполняются middleware из текущей сцены.
      */
     bot.use(stage);
     /**
      * Если активной сцены нет, здесь будет обработана приватная команда.
      */
-    bot.use(privateCommandWithoutScene);
+    bot.use(privateCommand);
     /**
      * Если активной сцены нет, здесь будет обработано приватное сообщение.
      */
-    bot.use(messageWithoutScene);
+    bot.use(privateMessageWithoutScene);
     /**
      * Обработка публичного сообщения в группе.
      */

@@ -1,7 +1,10 @@
 import { isPrivate } from "../../app/context";
 import { EngineContext } from "../../session/context";
 
-function handler(context: EngineContext, next: () => Promise<void>) {
+export default function privateCommand(
+    context: EngineContext,
+    next: () => Promise<void>
+) {
     if (!isPrivate(context)) return next();
 
     if (
@@ -21,25 +24,5 @@ function handler(context: EngineContext, next: () => Promise<void>) {
         }
     }
 
-    return next();
-}
-
-export function privateCommandWithoutScene(
-    context: EngineContext,
-    next: () => Promise<void>
-) {
-    if (!context.scene?.current) {
-        return handler(context, next);
-    }
-    return next();
-}
-
-export function privateCommandWithActiveScene(
-    context: EngineContext,
-    next: () => Promise<void>
-) {
-    if (context.scene?.current !== undefined) {
-        return handler(context, next);
-    }
     return next();
 }

@@ -1,7 +1,7 @@
 import { isPrivate } from "../../app/context";
 import { EngineContext } from "../../session/context";
 
-export default function messageWithoutScene(
+export default function privateMessageWithoutScene(
     context: EngineContext,
     next: () => Promise<void>
 ) {
