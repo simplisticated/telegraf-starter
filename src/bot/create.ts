@@ -14,7 +14,7 @@ import stage from "../middleware/private/stage";
 import { EngineContext } from "../session/context";
 import queue from "../middleware/common/queue";
 
-export function createBot(token: string) {
+export function createBot(token: string): Telegraf<EngineContext> {
     const bot = new Telegraf<EngineContext>(token);
     /**
      * Добавляем обработку сообщения в очередь с целью контроля нагрузки на сервер.

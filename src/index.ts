@@ -2,9 +2,10 @@ import "reflect-metadata";
 import STORE from "./data/store/store";
 import ENV from "./app/env";
 import { setupConsole } from "./app/console";
-import { createBot } from "./bot";
+import { createBot } from "./bot/create";
+import { launchBot } from "./bot/launch";
 
-async function start(): Promise<any> {
+async function start(): Promise<boolean> {
     setupConsole({
         outputTimestamp: true,
         timezone: ENV.LOG_TIMEZONE,
@@ -19,10 +20,18 @@ async function start(): Promise<any> {
         },
     });
 
-    await STORE.initialize();
+    const isStoreInitialized = await STORE.initialize();
+    if (!isStoreInitialized) {
+        console.error(`Store is not initialized.`);
+        return false;
+    }
+    console.log(`Database initialized`);
 
     const botList = ENV.TELEGRAM_TOKEN.map(createBot);
-    return Promise.allSettled(botList.map(bot => bot.launch()));
+    await Promise.allSettled(botList.map(launchBot));
+    console.log(`All bots launched`);
+
+    return true;
 }
 
 start();
