@@ -53,6 +53,11 @@ Here are the essential environment variables and their purposes:
 -   `TELEGRAM_TOKEN`: Specifies the token that is used for Telegram bot.
 -   `APP_ENVIRONMENT`: `production`, `test`, or `local`. See more information
     [here](#app-environment).
+-   `LOG_TIMEZONE`: Name of the timezone that will be used for console output.
+    -   This should be a timezone string, for example: `UTC`, `Europe/London`,
+        `America/New_York`, etc.
+    -   This value will be passed to the `timeZone` field in
+        `DateTimeFormatOptions` for logging purposes.
 
 You should create a `.env` file in the root of your project and define these
 variables with their respective values.
@@ -62,6 +67,7 @@ Here is an example `.env` file:
 ```
 TELEGRAM_TOKEN=1234567890
 APP_ENVIRONMENT=local
+LOG_TIMEZONE=America/New_York
 ```
 
 ## Scripts
