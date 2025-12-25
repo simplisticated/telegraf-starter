@@ -1,6 +1,6 @@
-import { EngineContext } from "../session/context";
-import { TELEGRAM_API_REQUEST_QUEUE } from "../tasks/instances";
-import overrideObjectMethod from "../tasks/override";
+import { EngineContext } from "../../session/context";
+import { TELEGRAM_API_REQUEST_QUEUE } from "../../tasks/instances";
+import overrideObjectMethod from "../../tasks/override";
 
 export default function overrideContextMethods(
     context: EngineContext,

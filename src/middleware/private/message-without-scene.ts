@@ -1,5 +1,5 @@
-import { isPrivate } from "../app/context";
-import { EngineContext } from "../session/context";
+import { isPrivate } from "../../app/context";
+import { EngineContext } from "../../session/context";
 
 export default function messageWithoutScene(
     context: EngineContext,

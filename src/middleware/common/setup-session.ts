@@ -1,7 +1,7 @@
 import { session } from "telegraf";
-import { EngineContext } from "../session/context";
-import { SessionStore } from "../session/store";
-import STORE from "../data/store/store";
+import { EngineContext } from "../../session/context";
+import { SessionStore } from "../../session/store";
+import STORE from "../../data/store/store";
 
 export default function setupSession(
     context: EngineContext,

@@ -1,5 +1,5 @@
-import { EngineContext } from "../session/context";
-import { INCOMING_UPDATE_QUEUE } from "../tasks/instances";
+import { EngineContext } from "../../session/context";
+import { INCOMING_UPDATE_QUEUE } from "../../tasks/instances";
 
 export default function queue(
     context: EngineContext,

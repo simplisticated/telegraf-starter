@@ -1,7 +1,7 @@
 import { Scenes } from "telegraf";
 import { message } from "telegraf/filters";
 import { EngineContext } from "../session/context";
-import { commandWithActiveScene } from "../middleware/command";
+import { commandWithActiveScene } from "../middleware/private/command";
 
 export const START_SCENE_ID = "start-scene";
 

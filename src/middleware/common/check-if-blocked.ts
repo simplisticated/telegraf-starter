@@ -1,5 +1,5 @@
-import STORE from "../data/store/store";
-import { EngineContext } from "../session/context";
+import STORE from "../../data/store/store";
+import { EngineContext } from "../../session/context";
 
 export default async function checkIfBlocked(
     context: EngineContext,

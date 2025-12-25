@@ -1,6 +1,6 @@
-import { isPrivate } from "../app/context";
-import STORE from "../data/store/store";
-import { EngineContext } from "../session/context";
+import { isPrivate } from "../../app/context";
+import STORE from "../../data/store/store";
+import { EngineContext } from "../../session/context";
 
 export default async function messageCount(
     context: EngineContext,

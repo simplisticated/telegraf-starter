@@ -1,10 +1,13 @@
-import STORE from "../data/store/store";
-import { EngineContext } from "../session/context";
+import { isPrivate } from "../../app/context";
+import STORE from "../../data/store/store";
+import { EngineContext } from "../../session/context";
 
 export default async function messageTimestamp(
     context: EngineContext,
     next: () => Promise<void>
 ) {
+    if (!isPrivate(context)) return next();
+
     if (
         context.updateType !== "message" ||
         !("message" in context) ||

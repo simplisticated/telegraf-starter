@@ -1,12 +1,12 @@
 import { MiddlewareFn } from "telegraf";
-import { isPrivate } from "../app/context";
-import { EngineContext } from "../session/context";
+import { isGroup } from "../../app/context";
+import { EngineContext } from "../../session/context";
 
-export default function onlyPrivate(
+export default function onlyGroup(
     middleware: MiddlewareFn<EngineContext>
 ): MiddlewareFn<EngineContext> {
     return (context, next) => {
-        if (!isPrivate(context)) return next();
+        if (!isGroup(context)) return next();
         return middleware(context, next);
     };
 }
