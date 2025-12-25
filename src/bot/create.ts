@@ -8,11 +8,11 @@ import telegramProfileData from "../middleware/common/telegram-profile-data";
 import userData from "../middleware/common/user-data";
 import { commandWithoutScene } from "../middleware/private/command";
 import messageCount from "../middleware/private/message-count";
-import messageTimestamp from "../middleware/private/message-timestamp";
 import messageWithoutScene from "../middleware/private/message-without-scene";
 import stage from "../middleware/private/stage";
 import { EngineContext } from "../session/context";
 import queue from "../middleware/common/queue";
+import groupMessage from "../middleware/group/group-message";
 
 export function createBot(token: string): Telegraf<EngineContext> {
     const bot = new Telegraf<EngineContext>(token);
@@ -50,9 +50,9 @@ export function createBot(token: string): Telegraf<EngineContext> {
      */
     bot.use(onlyPrivate(checkIfBlocked));
     /**
-     * Проверяем дату отправки сообщения.
+     * Обработка сообщения в группе.
      */
-    bot.use(messageTimestamp);
+    bot.use(groupMessage);
     bot.use(stage);
     bot.use(commandWithoutScene);
     bot.use(messageWithoutScene);
