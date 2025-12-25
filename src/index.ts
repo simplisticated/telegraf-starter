@@ -22,7 +22,7 @@ async function start(): Promise<boolean> {
 
     const isStoreInitialized = await STORE.initialize();
     if (!isStoreInitialized) {
-        console.error(`Store is not initialized.`);
+        console.error(`Database is not initialized`);
         return false;
     }
     console.log(`Database initialized`);
