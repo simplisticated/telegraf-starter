@@ -1,4 +1,5 @@
 import { isPrivate } from "../../app/context";
+import { parseCommand } from "../../app/message";
 import { EngineContext } from "../../session/context";
 
 export default function privateCommand(
@@ -6,21 +7,19 @@ export default function privateCommand(
     next: () => Promise<void>
 ) {
     if (!isPrivate(context)) return next();
+    if (context.updateType !== "message") return next();
+    if (context.message === undefined) return next();
+    if (!("text" in context.message)) return next();
 
-    if (
-        context.message &&
-        "text" in context.message &&
-        context.message.text.startsWith("/")
-    ) {
-        const segments = context.message.text.split(" ");
-        const command = segments[0].slice(1);
-        switch (command) {
-            case "start": {
-                return context.scene.enter("start-scene");
-            }
-            default: {
-                break;
-            }
+    const data = parseCommand(context.message);
+    if (!data) return next();
+
+    switch (data.command) {
+        case "start": {
+            return context.scene.enter("start-scene");
+        }
+        default: {
+            break;
         }
     }
 

@@ -35,22 +35,22 @@ export default class Queue {
      * связанные с этим пользователем, будут выполняться последовательно.
      * @returns Результат выполнения задачи.
      */
-    add<Result>(
-        task: Task<Result>,
-        configuration?: {
-            key?: string;
-            onTimeout?: () => void;
-        }
-    ): Promise<Result> {
+    addWithErrorHandling<ResultValue>(
+        task: Task<ResultValue>,
+        key?: string
+    ): Promise<TaskResult<ResultValue>> {
         return new Promise(resolve => {
-            const container: TaskContainer<Result> = {
+            const container: TaskContainer<ResultValue> = {
                 id: uuidv4(),
-                key: configuration?.key,
+                key,
                 task,
                 isHandled: false,
-                onTimeout: configuration?.onTimeout,
-                completion: result => {
-                    resolve(result);
+                completion: (result, error) => {
+                    resolve({
+                        value: result,
+                        error,
+                        isTimedOut: false,
+                    });
                 },
             };
             this.tasks.push(container);
@@ -67,13 +67,27 @@ export default class Queue {
                 setTimeout(() => {
                     if (!container.isHandled) {
                         this.remove(container.id);
-                        if (container.onTimeout) {
-                            container.onTimeout();
-                        }
+                        resolve({
+                            value: undefined,
+                            error: new Error("Timeout"),
+                            isTimedOut: true,
+                        });
                     }
                 }, this.configuration.taskTimeout);
             }
         });
+    }
+
+    /**
+     * Упрощенная версия метода `addWithErrorHandling`.
+     * Не проверяет ошибки, которые могут возникнуть при выполнении задачи.
+     */
+    async add<ResultValue>(
+        task: Task<ResultValue>,
+        key?: string
+    ): Promise<ResultValue> {
+        const result = await this.addWithErrorHandling(task, key);
+        return result.value!;
     }
 
     private remove(taskId: string) {
@@ -175,8 +189,13 @@ type TaskContainer<Result> = {
     key?: string;
     task: Task<Result>;
     isHandled: boolean;
-    onTimeout?: () => void;
-    completion: (result: Result, error: any) => void;
+    completion: (result?: Result, error?: any) => void;
+};
+
+type TaskResult<Value> = {
+    value: Value | undefined;
+    error: any;
+    isTimedOut: boolean;
 };
 
 type UpdateHandler = (count: number) => any;

@@ -6,12 +6,9 @@ export default function privateMessageWithoutScene(
     next: () => Promise<void>
 ) {
     if (!isPrivate(context)) return next();
+    if (context.updateType !== "message") return next();
 
-    if (
-        !context.scene.current &&
-        context.updateType === "message" &&
-        context.message !== undefined
-    ) {
+    if (!context.scene.current) {
         return context.scene.enter("start-scene");
     }
 

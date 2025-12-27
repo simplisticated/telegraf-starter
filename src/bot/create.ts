@@ -15,6 +15,7 @@ import { EngineContext } from "../session/context";
 import queue from "../middleware/common/queue";
 import { isGroup } from "../app/context";
 import { APP_CONFIGURATION } from "../app/configuration";
+import groupCommand from "../middleware/group/group-command";
 
 export function createBot(token: string): Telegraf<EngineContext> {
     const bot = new Telegraf<EngineContext>(token, {
@@ -68,11 +69,7 @@ export function createBot(token: string): Telegraf<EngineContext> {
     /**
      * Обработка команды в группе.
      */
-    bot.command(/.+/, context => {
-        if (!isGroup(context)) return;
-        console.log(`PUBLIC COMMAND:`, context.command, context.args);
-        // Реализация обработчика...
-    });
+    bot.use(groupCommand);
     /**
      * Обработка публичного сообщения в группе.
      */
@@ -83,18 +80,20 @@ export function createBot(token: string): Telegraf<EngineContext> {
     });
     bot.catch(async (error, context) => {
         console.error(error);
-        await context.reply(
-            `Запрос не обработан. Попробуйте повторить запрос позже.`,
-            {
-                ...("message" in context && context.message !== undefined
-                    ? {
-                          reply_parameters: {
-                              message_id: context.message.message_id,
-                          },
-                      }
-                    : undefined),
-            }
-        );
+        if (context.message !== undefined) {
+            await context.reply(
+                `Запрос не обработан. Попробуйте повторить запрос позже.`,
+                {
+                    ...(context.message !== undefined
+                        ? {
+                              reply_parameters: {
+                                  message_id: context.message.message_id,
+                              },
+                          }
+                        : undefined),
+                }
+            );
+        }
     });
     return bot;
 }
