@@ -9,16 +9,16 @@ export default async function userData(
     if (!sender) return next();
 
     const telegramProfile = await STORE.getTelegramProfileByTelegramId(
-        sender.id
+        sender.id.toString()
     );
     if (!telegramProfile) return next();
 
-    const bot = await STORE.getBotByTelegramId(context.botInfo.id);
+    const bot = await STORE.getBotByTelegramId(context.botInfo.id.toString());
     if (!bot) return next();
 
     const existingUser = await STORE.getUserByTelegramId(
-        sender.id,
-        context.botInfo.id
+        sender.id.toString(),
+        context.botInfo.id.toString()
     );
 
     if (!existingUser) {

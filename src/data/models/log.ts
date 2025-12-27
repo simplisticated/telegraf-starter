@@ -14,7 +14,7 @@ export default class LogModel {
     id!: number;
 
     @CreateDateColumn({
-        type: "datetime",
+        type: "timestamp with time zone",
         nullable: false,
     })
     created!: Date;

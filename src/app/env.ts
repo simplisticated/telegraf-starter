@@ -8,11 +8,29 @@ function getString(key: string): string | null {
     return process.env[key] ?? null;
 }
 
+function getNonEmptyStringOrThrowError(key: string): string {
+    const value = getString(key);
+    if (value === null) {
+        throw new Error(`${key} not found`);
+    } else if (value.length === 0) {
+        throw new Error(`${key} is empty`);
+    }
+    return value;
+}
+
 function getNumber(key: string): number | null {
     const stringValue = getString(key)?.trim();
     if (!stringValue) return null;
     const parsedNumber = Number(stringValue);
     return Number.isNaN(parsedNumber) ? null : parsedNumber;
+}
+
+function getNumberOrThrowError(key: string): number {
+    const value = getNumber(key);
+    if (value === null) {
+        throw new Error(`${key} not found`);
+    }
+    return value;
 }
 
 function getBoolean(key: string): boolean | null {
@@ -24,10 +42,28 @@ function getBoolean(key: string): boolean | null {
     return isBoolean ? stringValue === TRUE : null;
 }
 
+function getBooleanOrThrowError(key: string): boolean {
+    const value = getBoolean(key);
+    if (value === null) {
+        throw new Error(`${key} not found`);
+    }
+    return value;
+}
+
 function getStringList(key: string, divider: string = ","): string[] | null {
     const stringValue = getString(key)?.trim();
     if (!stringValue) return null;
     return stringValue.split(divider);
+}
+
+function getNonEmptyStringListOrThrowError(key: string): string[] {
+    const value = getStringList(key);
+    if (value === null) {
+        throw new Error(`${key} not found`);
+    } else if (value.length === 0) {
+        throw new Error(`${key} is empty`);
+    }
+    return value;
 }
 
 function getNumberList(key: string, divider: string = ","): number[] | null {
@@ -42,20 +78,30 @@ function getNumberList(key: string, divider: string = ","): number[] | null {
         .filter(value => value !== null);
 }
 
+function getNonEmptyNumberListOrThrowError(key: string): number[] {
+    const value = getNumberList(key);
+    if (value === null) {
+        throw new Error(`${key} not found`);
+    } else if (value.length === 0) {
+        throw new Error(`${key} is empty`);
+    }
+    return value;
+}
+
 const ENV = {
     APP_ENVIRONMENT: (() => {
         const value = getString("APP_ENVIRONMENT");
         return isAppEnvironment(value) ? value : AppEnvironment.local;
     })(),
-    TELEGRAM_TOKEN: (() => {
-        const name = "TELEGRAM_TOKEN";
-        const value = getStringList(name);
-        if (!value || !value.length) {
-            throw new Error(`${name} not found`);
-        }
-        return value;
-    })(),
+    TELEGRAM_TOKEN: getNonEmptyStringListOrThrowError("TELEGRAM_TOKEN"),
     LOG_TIMEZONE: getString("LOG_TIMEZONE") ?? "UTC",
+    DATABASE: {
+        NAME: getNonEmptyStringOrThrowError("DATABASE_NAME"),
+        HOST: getNonEmptyStringOrThrowError("DATABASE_HOST"),
+        PORT: getNumberOrThrowError("DATABASE_PORT"),
+        USERNAME: getNonEmptyStringOrThrowError("DATABASE_USERNAME"),
+        PASSWORD: getNonEmptyStringOrThrowError("DATABASE_PASSWORD"),
+    },
 };
 
 export default ENV;

@@ -16,23 +16,23 @@ export default class TelegramProfileModel {
     id!: number;
 
     @CreateDateColumn({
-        type: "datetime",
+        type: "timestamp with time zone",
         nullable: false,
     })
     created!: Date;
 
     @UpdateDateColumn({
-        type: "datetime",
+        type: "timestamp with time zone",
         nullable: true,
     })
     updated?: Date;
 
     @Column({
-        type: "integer",
+        type: "text",
         nullable: false,
         unique: true,
     })
-    telegram_id!: number;
+    telegram_id!: string;
 
     @Column({
         type: "boolean",

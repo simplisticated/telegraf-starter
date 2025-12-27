@@ -10,7 +10,7 @@ export default async function telegramProfileData(
     if (!sender) return next();
 
     const telegramProfileResult = await STORE.createOrUpdateTelegramProfile({
-        telegram_id: sender.id,
+        telegram_id: sender.id.toString(),
         is_bot: sender.is_bot,
         first_name: sender.first_name,
         last_name: sender.last_name,

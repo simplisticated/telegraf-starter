@@ -39,17 +39,17 @@ export class Store {
         }
     }
 
-    async getUserByTelegramId(telegramId: number, botId: number) {
+    async getUserByTelegramId(userTelegramId: string, botTelegramId: string) {
         try {
             const user = await this.configuration.dataSource
                 .getRepository(UserModel)
                 .findOne({
                     where: {
                         telegramProfile: {
-                            telegram_id: telegramId,
+                            telegram_id: userTelegramId,
                         },
                         bot: {
-                            telegram_id: botId,
+                            telegram_id: botTelegramId,
                         },
                     },
                     relations: {
@@ -64,9 +64,15 @@ export class Store {
         }
     }
 
-    async isAdministrator(telegramId: number, botId: number): Promise<boolean> {
+    async isAdministrator(
+        userTelegramId: string,
+        botTelegramId: string
+    ): Promise<boolean> {
         try {
-            const user = await this.getUserByTelegramId(telegramId, botId);
+            const user = await this.getUserByTelegramId(
+                userTelegramId,
+                botTelegramId
+            );
             return user?.is_administrator ?? false;
         } catch (error) {
             console.error(error);
@@ -75,8 +81,8 @@ export class Store {
     }
 
     async setAdministrator(
-        telegramId: number,
-        botId: number,
+        userTelegramId: string,
+        botTelegramId: string,
         isAdministrator: boolean
     ): Promise<boolean> {
         try {
@@ -87,10 +93,10 @@ export class Store {
                     const user = await repository.findOne({
                         where: {
                             telegramProfile: {
-                                telegram_id: telegramId,
+                                telegram_id: userTelegramId,
                             },
                             bot: {
-                                telegram_id: botId,
+                                telegram_id: botTelegramId,
                             },
                         },
                         relations: {
@@ -117,9 +123,15 @@ export class Store {
         }
     }
 
-    async isBlocked(telegramId: number, botId: number): Promise<boolean> {
+    async isBlocked(
+        userTelegramId: string,
+        botTelegramId: string
+    ): Promise<boolean> {
         try {
-            const user = await this.getUserByTelegramId(telegramId, botId);
+            const user = await this.getUserByTelegramId(
+                userTelegramId,
+                botTelegramId
+            );
             return user?.is_blocked ?? false;
         } catch (error) {
             console.error(error);
@@ -128,8 +140,8 @@ export class Store {
     }
 
     async setBlocked(
-        telegramId: number,
-        botId: number,
+        userTelegramId: string,
+        botTelegramId: string,
         isBlocked: boolean
     ): Promise<boolean> {
         try {
@@ -140,10 +152,10 @@ export class Store {
                     const user = await repository.findOne({
                         where: {
                             telegramProfile: {
-                                telegram_id: telegramId,
+                                telegram_id: userTelegramId,
                             },
                             bot: {
-                                telegram_id: botId,
+                                telegram_id: botTelegramId,
                             },
                         },
                         relations: {
@@ -203,8 +215,8 @@ export class Store {
     }
 
     async updateUserState(
-        telegramId: number,
-        botId: number,
+        userTelegramId: string,
+        botTelegramId: string,
         handler: (previousState: UserState) => Partial<UserState>
     ): Promise<UserModel | null> {
         try {
@@ -215,10 +227,10 @@ export class Store {
                     const user = await userRepository.findOne({
                         where: {
                             telegramProfile: {
-                                telegram_id: telegramId,
+                                telegram_id: userTelegramId,
                             },
                             bot: {
-                                telegram_id: botId,
+                                telegram_id: botTelegramId,
                             },
                         },
                     });
@@ -257,7 +269,7 @@ export class Store {
         }
     }
 
-    async getBotByTelegramId(telegramId: number) {
+    async getBotByTelegramId(telegramId: string) {
         try {
             const bot = await this.configuration.dataSource
                 .getRepository(BotModel)
@@ -395,7 +407,7 @@ export class Store {
     }
 
     async getTelegramProfileByTelegramId(
-        telegramId: number
+        telegramId: string
     ): Promise<TelegramProfileModel | null> {
         try {
             const telegramProfile = await this.configuration.dataSource

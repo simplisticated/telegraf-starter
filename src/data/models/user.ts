@@ -20,13 +20,13 @@ export default class UserModel {
     id!: number;
 
     @CreateDateColumn({
-        type: "datetime",
+        type: "timestamp with time zone",
         nullable: false,
     })
     created!: Date;
 
     @UpdateDateColumn({
-        type: "datetime",
+        type: "timestamp with time zone",
         nullable: true,
     })
     updated?: Date;
@@ -46,7 +46,7 @@ export default class UserModel {
     is_blocked!: boolean;
 
     @Column({
-        type: "json",
+        type: "jsonb",
         nullable: false,
     })
     state!: UserState;

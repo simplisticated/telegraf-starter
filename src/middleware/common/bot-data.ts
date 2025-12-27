@@ -7,7 +7,7 @@ export default async function botData(
 ) {
     const bot = context.botInfo;
     await STORE.createOrUpdateBot({
-        telegram_id: bot.id,
+        telegram_id: bot.id.toString(),
         username: bot.username,
         can_join_groups: bot.can_join_groups,
         can_read_all_group_messages: bot.can_read_all_group_messages,

@@ -13,8 +13,8 @@ export default async function privateMessageCount(
 
     if (sender) {
         await STORE.updateUserState(
-            sender.id,
-            context.botInfo.id,
+            sender.id.toString(),
+            context.botInfo.id.toString(),
             previousState => ({
                 privateMessageCount:
                     (previousState.privateMessageCount ?? 0) + 1,
