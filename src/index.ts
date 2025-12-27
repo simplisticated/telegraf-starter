@@ -5,7 +5,7 @@ import { setupConsole } from "./app/console";
 import { createBot } from "./bot/common/create";
 import { launchBot } from "./bot/common/launch";
 import PATH from "./app/path";
-import { startServer } from "./server";
+import { launchServer } from "./server/launch";
 
 async function start(): Promise<boolean> {
     setupConsole({
@@ -38,7 +38,10 @@ async function start(): Promise<boolean> {
     console.log(`All bots launched`);
 
     console.log(`Starting server`);
-    const serverLaunched = await startServer(ENV.SERVER_PORT);
+    const serverLaunched = await launchServer({
+        port: ENV.SERVER_PORT,
+        useHttps: ENV.USE_HTTPS,
+    });
     if (serverLaunched) {
         console.log(`🚀 Server is listening on port ${ENV.SERVER_PORT}`);
     }

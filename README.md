@@ -4,11 +4,13 @@ Telegram bot starter with Telegraf.js and TypeScript. Includes the following
 features and tools:
 
 -   TypeScript
+-   Express
 -   Jest
 -   Prettier
 -   ESLint with Airbnb style
 -   TypeORM
 -   100% automatic user management with SQLite database
+-   Built-in API server
 
 ## How to Get Started
 
@@ -28,6 +30,10 @@ first run):
 ```
 npm run typeorm:migration:run
 ```
+
+If you're going to start API server with HTTPS, put `key.pem` and `cert.pem` in
+the `certificates` folder and set the `USE_HTTPS` environment variable to
+`true`.
 
 For starting the server in development mode, use the following command:
 
@@ -58,6 +64,12 @@ Here are the essential environment variables and their purposes:
         `America/New_York`, etc.
     -   This value will be passed to the `timeZone` field in
         `DateTimeFormatOptions` for logging purposes.
+-   `SERVER_PORT`: Defines the port on which the server will listen. If not
+    provided, the default port is 3000.
+-   `USE_HTTPS`: If set to `true`, HTTPS will be used for the server.
+-   `LOG_SERVER_REQUESTS`: This variable controls whether request logging is
+    enabled. When set to `true`, the server logs requests, including the date,
+    HTTP method, URL, and request body.
 
 You should create a `.env` file in the root of your project and define these
 variables with their respective values.
