@@ -81,5 +81,20 @@ export function createBot(token: string): Telegraf<EngineContext> {
         console.log(`PUBLIC MESSAGE:`, context.message.text);
         // Реализация обработчика...
     });
+    bot.catch(async (error, context) => {
+        console.error(error);
+        await context.reply(
+            `Запрос не обработан. Попробуйте повторить запрос позже.`,
+            {
+                ...("message" in context && context.message !== undefined
+                    ? {
+                          reply_parameters: {
+                              message_id: context.message.message_id,
+                          },
+                      }
+                    : undefined),
+            }
+        );
+    });
     return bot;
 }

@@ -8,6 +8,7 @@ function getAppConfiguration(
     return {
         app: {
             incomingRequestHandlerTimeout: 3600 * 1000,
+            // incomingRequestHandlerTimeout: 5000,
         },
     };
 }

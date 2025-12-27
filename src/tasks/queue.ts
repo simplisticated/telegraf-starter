@@ -17,6 +17,7 @@ export default class Queue {
             timeIntervalBetweenIterations: number;
             numberOfTasksToRunDuringIteration: number;
             start: "immediately" | "when-added-first-block";
+            taskTimeout?: number;
         }
     ) {
         if (this.configuration.start === "immediately") {
@@ -34,12 +35,20 @@ export default class Queue {
      * связанные с этим пользователем, будут выполняться последовательно.
      * @returns Результат выполнения задачи.
      */
-    add<Result>(task: Task<Result>, key?: string): Promise<Result> {
+    add<Result>(
+        task: Task<Result>,
+        configuration?: {
+            key?: string;
+            onTimeout?: () => void;
+        }
+    ): Promise<Result> {
         return new Promise(resolve => {
             const container: TaskContainer<Result> = {
                 id: uuidv4(),
-                key,
-                block: task,
+                key: configuration?.key,
+                task,
+                isHandled: false,
+                onTimeout: configuration?.onTimeout,
                 completion: result => {
                     resolve(result);
                 },
@@ -53,11 +62,22 @@ export default class Queue {
             ) {
                 this.start();
             }
+
+            if (this.configuration.taskTimeout) {
+                setTimeout(() => {
+                    if (!container.isHandled) {
+                        this.remove(container.id);
+                        if (container.onTimeout) {
+                            container.onTimeout();
+                        }
+                    }
+                }, this.configuration.taskTimeout);
+            }
         });
     }
 
-    private remove(blockId: string) {
-        const index = this.tasks.findIndex(el => el.id === blockId);
+    private remove(taskId: string) {
+        const index = this.tasks.findIndex(el => el.id === taskId);
 
         if (index >= 0 && index < this.tasks.length) {
             this.tasks.splice(index, 1);
@@ -81,6 +101,7 @@ export default class Queue {
             }
 
             if (!container.key || !usedKeys.has(container.key)) {
+                container.isHandled = true;
                 containers.push(container);
                 if (container.key) {
                     usedKeys.add(container.key);
@@ -91,7 +112,7 @@ export default class Queue {
         await Promise.allSettled(
             containers.map(async taskContainer => {
                 try {
-                    const result = await taskContainer.block();
+                    const result = await taskContainer.task();
                     taskContainer.completion(result, null);
                 } catch (error) {
                     taskContainer.completion(null, error);
@@ -152,7 +173,9 @@ type Task<Result> = () => Promise<Result>;
 type TaskContainer<Result> = {
     id: string;
     key?: string;
-    block: Task<Result>;
+    task: Task<Result>;
+    isHandled: boolean;
+    onTimeout?: () => void;
     completion: (result: Result, error: any) => void;
 };
 

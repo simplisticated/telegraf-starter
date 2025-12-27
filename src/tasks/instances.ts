@@ -10,6 +10,7 @@ export const INCOMING_TELEGRAM_UPDATE_QUEUE = new Queue({
     timeIntervalBetweenIterations: 500,
     numberOfTasksToRunDuringIteration: 20,
     start: "immediately",
+    taskTimeout: 1000,
 });
 
 export const OUTGOING_MESSAGE_QUEUE = new Queue({
