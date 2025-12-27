@@ -1,9 +1,12 @@
 import { EngineContext } from "../../session/context";
-import { INCOMING_UPDATE_QUEUE } from "../../tasks/instances";
+import { INCOMING_TELEGRAM_UPDATE_QUEUE } from "../../tasks/instances";
 
 export default function queue(
     context: EngineContext,
     next: () => Promise<void>
 ): Promise<void> {
-    return INCOMING_UPDATE_QUEUE.add(next);
+    return INCOMING_TELEGRAM_UPDATE_QUEUE.add(
+        next,
+        context.from ? `telegram-user-${context.from.id}` : undefined
+    );
 }

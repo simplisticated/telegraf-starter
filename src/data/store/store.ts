@@ -1,4 +1,5 @@
 import { DataSource } from "typeorm";
+import { IsolationLevel } from "typeorm/driver/types/IsolationLevel";
 import TelegramProfileModel from "../models/telegram-profile";
 import DATA_SOURCE from "./data-source";
 import { UserState } from "../types/user-state";
@@ -8,7 +9,12 @@ import BotModel from "../models/bot";
 import LogModel from "../models/log";
 
 export class Store {
-    constructor(private configuration: { dataSource: DataSource }) {}
+    constructor(
+        private configuration: {
+            dataSource: DataSource;
+            preferredIsolationLevel: IsolationLevel;
+        }
+    ) {}
 
     async initialize(): Promise<boolean> {
         try {
@@ -87,7 +93,7 @@ export class Store {
     ): Promise<boolean> {
         try {
             return await this.configuration.dataSource.transaction(
-                "SERIALIZABLE",
+                this.configuration.preferredIsolationLevel,
                 async manager => {
                     const repository = manager.getRepository(UserModel);
                     const user = await repository.findOne({
@@ -146,7 +152,7 @@ export class Store {
     ): Promise<boolean> {
         try {
             return await this.configuration.dataSource.transaction(
-                "SERIALIZABLE",
+                this.configuration.preferredIsolationLevel,
                 async manager => {
                     const repository = manager.getRepository(UserModel);
                     const user = await repository.findOne({
@@ -187,7 +193,7 @@ export class Store {
     ): Promise<UserModel | null> {
         try {
             return await this.configuration.dataSource.transaction(
-                "SERIALIZABLE",
+                this.configuration.preferredIsolationLevel,
                 async manager => {
                     const repository = manager.getRepository(UserModel);
                     const existingUser = userData.id
@@ -221,7 +227,7 @@ export class Store {
     ): Promise<UserModel | null> {
         try {
             return await this.configuration.dataSource.transaction(
-                "SERIALIZABLE",
+                this.configuration.preferredIsolationLevel,
                 async manager => {
                     const userRepository = manager.getRepository(UserModel);
                     const user = await userRepository.findOne({
@@ -290,7 +296,7 @@ export class Store {
     ): Promise<BotModel | null> {
         try {
             return await this.configuration.dataSource.transaction(
-                "SERIALIZABLE",
+                this.configuration.preferredIsolationLevel,
                 async manager => {
                     if (!botData.telegram_id) {
                         throw new Error("Bot should include telegram_id");
@@ -339,7 +345,7 @@ export class Store {
     ): Promise<SessionModel | null> {
         try {
             return await this.configuration.dataSource.transaction(
-                "SERIALIZABLE",
+                this.configuration.preferredIsolationLevel,
                 async manager => {
                     if (!sessionData.session_id) {
                         throw new Error("Session should include session_id");
@@ -376,7 +382,7 @@ export class Store {
     async removeSession(sessionId: string): Promise<boolean> {
         try {
             return await this.configuration.dataSource.transaction(
-                "SERIALIZABLE",
+                this.configuration.preferredIsolationLevel,
                 async manager => {
                     const repository = manager.getRepository(SessionModel);
                     await repository.delete({
@@ -428,7 +434,7 @@ export class Store {
     } | null> {
         try {
             return await this.configuration.dataSource.transaction(
-                "SERIALIZABLE",
+                this.configuration.preferredIsolationLevel,
                 async manager => {
                     if (!telegramProfileData.telegram_id) {
                         throw new Error(
@@ -494,7 +500,7 @@ export class Store {
     async createLog(logData: Partial<LogModel>): Promise<LogModel | null> {
         try {
             return await this.configuration.dataSource.transaction(
-                "SERIALIZABLE",
+                this.configuration.preferredIsolationLevel,
                 async manager => {
                     const repository = manager.getRepository(LogModel);
                     const log = await repository.save(
@@ -512,6 +518,7 @@ export class Store {
 
 const STORE = new Store({
     dataSource: DATA_SOURCE,
+    preferredIsolationLevel: "READ COMMITTED",
 });
 
 export default STORE;

@@ -14,9 +14,12 @@ import stage from "../middleware/private/stage";
 import { EngineContext } from "../session/context";
 import queue from "../middleware/common/queue";
 import { isGroup } from "../app/context";
+import { APP_CONFIGURATION } from "../app/configuration";
 
 export function createBot(token: string): Telegraf<EngineContext> {
-    const bot = new Telegraf<EngineContext>(token);
+    const bot = new Telegraf<EngineContext>(token, {
+        handlerTimeout: APP_CONFIGURATION.app.incomingRequestHandlerTimeout,
+    });
     /**
      * Добавляем обработку сообщения в очередь с целью контроля нагрузки на сервер.
      */

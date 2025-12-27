@@ -5,7 +5,11 @@ function getAppConfiguration(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     environment: AppEnvironment
 ) {
-    return {};
+    return {
+        app: {
+            incomingRequestHandlerTimeout: 3600 * 1000,
+        },
+    };
 }
 
 /**

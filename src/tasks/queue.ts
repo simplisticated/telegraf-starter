@@ -2,10 +2,10 @@ import { v4 as uuidv4 } from "uuid";
 import { wait } from "./wait";
 
 export default class Queue {
-    private blocks: BlockContainer<any>[] = [];
+    private tasks: TaskContainer<any>[] = [];
 
-    getNumberOfBlocks() {
-        return this.blocks.length;
+    getNumberOfTasks() {
+        return this.tasks.length;
     }
 
     private updateHandlers: UpdateHandlerContainer[] = [];
@@ -15,7 +15,7 @@ export default class Queue {
     constructor(
         private configuration: {
             timeIntervalBetweenIterations: number;
-            numberOfBlocksToHandleDuringIteration: number;
+            numberOfTasksToRunDuringIteration: number;
             start: "immediately" | "when-added-first-block";
         }
     ) {
@@ -24,16 +24,27 @@ export default class Queue {
         }
     }
 
-    add<Result>(block: Block<Result>): Promise<Result> {
+    /**
+     * Добавляет задачу в очередь.
+     * @param task Задача.
+     * @param key Необязательный ключ. Задачи с одинаковым ключом не попадают в одну итерацию.
+     * Это можно использовать, к примеру, если требуется последовательно обрабатывать задачи
+     * для конкретного пользователя в многопользовательской среде.
+     * В таком случае достаточно указать ID пользователя в качестве ключа и тогда задачи,
+     * связанные с этим пользователем, будут выполняться последовательно.
+     * @returns Результат выполнения задачи.
+     */
+    add<Result>(task: Task<Result>, key?: string): Promise<Result> {
         return new Promise(resolve => {
-            const container: BlockContainer<Result> = {
+            const container: TaskContainer<Result> = {
                 id: uuidv4(),
-                block,
+                key,
+                block: task,
                 completion: result => {
                     resolve(result);
                 },
             };
-            this.blocks.push(container);
+            this.tasks.push(container);
             this.updatedBlocks();
 
             if (
@@ -46,35 +57,47 @@ export default class Queue {
     }
 
     private remove(blockId: string) {
-        const index = this.blocks.findIndex(el => el.id === blockId);
+        const index = this.tasks.findIndex(el => el.id === blockId);
 
-        if (index >= 0 && index < this.blocks.length) {
-            this.blocks.splice(index, 1);
+        if (index >= 0 && index < this.tasks.length) {
+            this.tasks.splice(index, 1);
             this.updatedBlocks();
         }
     }
 
     private async iteration() {
-        const { numberOfBlocksToHandleDuringIteration } = this.configuration;
+        const { numberOfTasksToRunDuringIteration } = this.configuration;
 
-        if (!this.blocks.length) return;
-        if (numberOfBlocksToHandleDuringIteration <= 0) return;
+        if (!this.tasks.length) return;
+        if (numberOfTasksToRunDuringIteration <= 0) return;
 
-        const containers = this.blocks.slice(
-            0,
-            numberOfBlocksToHandleDuringIteration
-        );
+        const containers: TaskContainer<any>[] = [];
+        const usedKeys = new Set<string>();
+
+        // eslint-disable-next-line no-restricted-syntax
+        for (const container of this.tasks) {
+            if (containers.length >= numberOfTasksToRunDuringIteration) {
+                break;
+            }
+
+            if (!container.key || !usedKeys.has(container.key)) {
+                containers.push(container);
+                if (container.key) {
+                    usedKeys.add(container.key);
+                }
+            }
+        }
 
         await Promise.allSettled(
-            containers.map(async blockContainer => {
+            containers.map(async taskContainer => {
                 try {
-                    const result = await blockContainer.block();
-                    blockContainer.completion(result, null);
+                    const result = await taskContainer.block();
+                    taskContainer.completion(result, null);
                 } catch (error) {
-                    blockContainer.completion(null, error);
+                    taskContainer.completion(null, error);
                     console.error(error);
                 } finally {
-                    this.remove(blockContainer.id);
+                    this.remove(taskContainer.id);
                 }
             })
         );
@@ -105,7 +128,7 @@ export default class Queue {
 
     async waitTillBlockCount(requiredBlockCount: number): Promise<void> {
         return new Promise(resolve => {
-            if (this.blocks.length === requiredBlockCount) {
+            if (this.tasks.length === requiredBlockCount) {
                 resolve();
                 return;
             }
@@ -119,16 +142,17 @@ export default class Queue {
     }
 
     private updatedBlocks() {
-        const blockCount = this.blocks.length;
+        const blockCount = this.tasks.length;
         this.updateHandlers.forEach(container => container.handler(blockCount));
     }
 }
 
-type Block<Result> = () => Promise<Result>;
+type Task<Result> = () => Promise<Result>;
 
-type BlockContainer<Result> = {
+type TaskContainer<Result> = {
     id: string;
-    block: Block<Result>;
+    key?: string;
+    block: Task<Result>;
     completion: (result: Result, error: any) => void;
 };
 
