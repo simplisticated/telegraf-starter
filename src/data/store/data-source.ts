@@ -15,7 +15,6 @@ const DATA_SOURCE = new DataSource({
     migrationsRun: false,
     migrationsTableName: "DatabaseMigrations",
     subscribers: [],
-    enableWAL: true,
 });
 
 overrideObjectMethod(DATA_SOURCE, "transaction", async (source, ...args) =>
