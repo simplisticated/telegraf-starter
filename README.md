@@ -8,7 +8,7 @@ features and tools:
 -   Prettier
 -   ESLint with Airbnb style
 -   TypeORM
--   100% automatic user management with PostgreSQL database
+-   100% automatic user management with SQLite database
 
 ## How to Get Started
 
@@ -20,11 +20,10 @@ npm install
 ```
 
 Next, set up the [environment variables](#environment-variables): create a
-`.env` file and add the required values (including database connection settings
-for PostgreSQL).
+`.env` file and add the required values.
 
-Then, run the database migrations (this will create the required tables in the
-PostgreSQL database on the first run):
+Then, run the database migrations (this will create the SQLite database on the
+first run):
 
 ```
 npm run typeorm:migration:run
@@ -59,11 +58,6 @@ Here are the essential environment variables and their purposes:
         `America/New_York`, etc.
     -   This value will be passed to the `timeZone` field in
         `DateTimeFormatOptions` for logging purposes.
--   `DATABASE_NAME`: name of the PostgreSQL database.
--   `DATABASE_HOST`: database host (for example, `localhost`).
--   `DATABASE_PORT`: database port (default PostgreSQL port is `5432`).
--   `DATABASE_USERNAME`: username.
--   `DATABASE_PASSWORD`: password.
 
 You should create a `.env` file in the root of your project and define these
 variables with their respective values.
@@ -74,11 +68,6 @@ Here is an example `.env` file:
 TELEGRAM_TOKEN=1234567890
 APP_ENVIRONMENT=local
 LOG_TIMEZONE=America/New_York
-DATABASE_NAME=
-DATABASE_HOST=
-DATABASE_PORT=
-DATABASE_USERNAME=
-DATABASE_PASSWORD=
 ```
 
 ## Scripts
@@ -197,7 +186,19 @@ if (ENV.APP_ENVIRONMENT === AppEnvironment.production) {
 
 ## Database
 
-This project uses PostgreSQL by default. The data is managed through TypeORM.
+This project uses SQLite by default to keep the starter lightweight and easy to
+deploy. The data is managed through TypeORM. The database file is located at
+
+```
+data/<APP_ENVIRONMENT>/database.sqlite
+```
+
+For instance, if the `APP_ENVIRONMENT` is set to `production`, the database path
+would be
+
+```
+data/production/database.sqlite
+```
 
 Database interactions are facilitated by the [STORE](./src/data/store/store.ts)
 object, which offers essential methods for reading and writing data models.
