@@ -13,8 +13,8 @@ export default function privateCommand(
         context.message.text.startsWith("/")
     ) {
         const segments = context.message.text.split(" ");
-        const commandFromMessage = segments[0].slice(1);
-        switch (commandFromMessage) {
+        const command = segments[0].slice(1);
+        switch (command) {
             case "start": {
                 return context.scene.enter("start-scene");
             }

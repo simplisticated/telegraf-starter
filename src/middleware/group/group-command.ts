@@ -1,7 +1,7 @@
 import { isGroup } from "../../app/context";
 import { EngineContext } from "../../session/context";
 
-export default async function groupMessage(
+export default async function groupCommand(
     context: EngineContext,
     next: () => Promise<void>
 ) {
@@ -15,8 +15,15 @@ export default async function groupMessage(
     const chatId = context.chat?.id;
     if (!chatId) return next();
 
-    if ("text" in context.message) {
-        // Here you can implement handler for the message
+    if ("text" in context.message && context.message.text.startsWith("/")) {
+        const segments = context.message.text.split(" ");
+        const command = segments[0].slice(1);
+        switch (command) {
+            // Here you can implement handler for the command
+            default: {
+                break;
+            }
+        }
     }
 
     return next();

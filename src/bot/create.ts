@@ -1,4 +1,5 @@
 import { Telegraf } from "telegraf";
+import { message } from "telegraf/filters";
 import botData from "../middleware/common/bot-data";
 import checkIfBlocked from "../middleware/common/check-if-blocked";
 import onlyPrivate from "../middleware/common/only-private";
@@ -12,7 +13,7 @@ import privateMessageWithoutScene from "../middleware/private/private-message-wi
 import stage from "../middleware/private/stage";
 import { EngineContext } from "../session/context";
 import queue from "../middleware/common/queue";
-import groupMessage from "../middleware/group/group-message";
+import { isGroup } from "../app/context";
 
 export function createBot(token: string): Telegraf<EngineContext> {
     const bot = new Telegraf<EngineContext>(token);
@@ -62,8 +63,20 @@ export function createBot(token: string): Telegraf<EngineContext> {
      */
     bot.use(privateMessageWithoutScene);
     /**
+     * Обработка команды в группе.
+     */
+    bot.command(/.+/, context => {
+        if (!isGroup(context)) return;
+        console.log(`PUBLIC COMMAND:`, context.command, context.args);
+        // Реализация обработчика...
+    });
+    /**
      * Обработка публичного сообщения в группе.
      */
-    bot.use(groupMessage);
+    bot.on(message("text"), context => {
+        if (!isGroup(context)) return;
+        console.log(`PUBLIC MESSAGE:`, context.message.text);
+        // Реализация обработчика...
+    });
     return bot;
 }

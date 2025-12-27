@@ -20,6 +20,7 @@ async function start(): Promise<boolean> {
         },
     });
 
+    console.log(`Preparing database...`);
     const isStoreInitialized = await STORE.initialize();
     if (!isStoreInitialized) {
         console.error(`Database is not initialized`);
@@ -27,6 +28,7 @@ async function start(): Promise<boolean> {
     }
     console.log(`Database initialized`);
 
+    console.log(`Launching bots...`);
     const botList = ENV.TELEGRAM_TOKEN.map(createBot);
     await Promise.allSettled(botList.map(launchBot));
     console.log(`All bots launched`);
