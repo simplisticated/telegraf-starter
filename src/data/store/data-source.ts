@@ -17,8 +17,8 @@ const DATA_SOURCE = new DataSource({
     subscribers: [],
 });
 
-overrideObjectMethod(DATA_SOURCE, "transaction", async (source, ...args) =>
-    DATABASE_QUEUE.add(async () => source(...args))
+overrideObjectMethod(DATA_SOURCE, "transaction", (source, ...parameters) =>
+    DATABASE_QUEUE.add(() => source(...parameters))
 );
 
 export default DATA_SOURCE;
