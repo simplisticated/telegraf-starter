@@ -1,4 +1,4 @@
-import { DataSource } from "typeorm";
+import { DataSource, FindOptionsWhere } from "typeorm";
 import { IsolationLevel } from "typeorm/driver/types/IsolationLevel";
 import TelegramProfileModel from "../models/telegram-profile";
 import DATA_SOURCE from "./data-source";
@@ -26,48 +26,55 @@ export class Store {
         }
     }
 
-    async getUserById(id: number) {
+    async getUser(
+        where: FindOptionsWhere<UserModel>
+    ): Promise<UserModel | null> {
         try {
-            const user = await this.configuration.dataSource
+            return await this.configuration.dataSource
                 .getRepository(UserModel)
                 .findOne({
-                    where: {
-                        id,
-                    },
+                    where,
                     relations: {
                         telegramProfile: true,
+                        bot: true,
                     },
                 });
-            return user;
         } catch (error) {
             console.error(error);
             return null;
         }
     }
 
-    async getUserByTelegramId(userTelegramId: string, botTelegramId: string) {
+    async getUsers(where: FindOptionsWhere<UserModel>): Promise<UserModel[]> {
         try {
-            const user = await this.configuration.dataSource
+            return await this.configuration.dataSource
                 .getRepository(UserModel)
-                .findOne({
-                    where: {
-                        telegramProfile: {
-                            telegram_id: userTelegramId,
-                        },
-                        bot: {
-                            telegram_id: botTelegramId,
-                        },
-                    },
+                .find({
+                    where,
                     relations: {
                         telegramProfile: true,
                         bot: true,
                     },
                 });
-            return user;
         } catch (error) {
             console.error(error);
-            return null;
+            return [];
         }
+    }
+
+    async getUserById(id: number) {
+        return this.getUser({ id });
+    }
+
+    async getUserByTelegramId(userTelegramId: string, botTelegramId: string) {
+        return this.getUser({
+            telegramProfile: {
+                telegram_id: userTelegramId,
+            },
+            bot: {
+                telegram_id: botTelegramId,
+            },
+        });
     }
 
     async isAdministrator(
@@ -259,36 +266,38 @@ export class Store {
         }
     }
 
-    async getBotById(id: number) {
+    async getBot(where: FindOptionsWhere<BotModel>): Promise<BotModel | null> {
         try {
-            const bot = await this.configuration.dataSource
+            return await this.configuration.dataSource
                 .getRepository(BotModel)
                 .findOne({
-                    where: {
-                        id,
-                    },
+                    where,
                 });
-            return bot;
         } catch (error) {
             console.error(error);
             return null;
         }
     }
 
-    async getBotByTelegramId(telegramId: string) {
+    async getBots(where: FindOptionsWhere<BotModel>): Promise<BotModel[]> {
         try {
-            const bot = await this.configuration.dataSource
+            return await this.configuration.dataSource
                 .getRepository(BotModel)
-                .findOne({
-                    where: {
-                        telegram_id: telegramId,
-                    },
+                .find({
+                    where,
                 });
-            return bot;
         } catch (error) {
             console.error(error);
-            return null;
+            return [];
         }
+    }
+
+    async getBotById(id: number) {
+        return this.getBot({ id });
+    }
+
+    async getBotByTelegramId(telegramId: string) {
+        return this.getBot({ telegram_id: telegramId });
     }
 
     async createOrUpdateBot(
@@ -398,32 +407,31 @@ export class Store {
         }
     }
 
-    async getTelegramProfileById(
-        id: number
+    async getTelegramProfile(
+        where: FindOptionsWhere<TelegramProfileModel>
     ): Promise<TelegramProfileModel | null> {
         try {
-            const telegramProfile = await this.configuration.dataSource
+            return await this.configuration.dataSource
                 .getRepository(TelegramProfileModel)
-                .findOne({ where: { id } });
-            return telegramProfile;
+                .findOne({
+                    where,
+                });
         } catch (error) {
             console.error(error);
             return null;
         }
     }
 
+    async getTelegramProfileById(
+        id: number
+    ): Promise<TelegramProfileModel | null> {
+        return this.getTelegramProfile({ id });
+    }
+
     async getTelegramProfileByTelegramId(
         telegramId: string
     ): Promise<TelegramProfileModel | null> {
-        try {
-            const telegramProfile = await this.configuration.dataSource
-                .getRepository(TelegramProfileModel)
-                .findOne({ where: { telegram_id: telegramId } });
-            return telegramProfile;
-        } catch (error) {
-            console.error(error);
-            return null;
-        }
+        return this.getTelegramProfile({ telegram_id: telegramId });
     }
 
     async createOrUpdateTelegramProfile(
