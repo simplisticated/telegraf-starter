@@ -48,6 +48,19 @@ npm run build
 npm run start
 ```
 
+## How to Use the Project
+
+To extend functionality of the bot:
+
+-   Add new [scenes](./src/bot/scenes/index.ts) and register them in the
+    [stage middleware](./src/bot/middleware/private/stage.ts).
+-   Implement additional middleware in the
+    [middleware directory](./src/bot/middleware/private/private-message-without-scene.ts)
+    when needed.
+
+To extend functionality of the server, add new
+[endpoints](./src/server/api/main.ts).
+
 ## Environment Variables
 
 This project relies on various environment variables for configuration. You can
@@ -80,6 +93,9 @@ Here is an example `.env` file:
 TELEGRAM_TOKEN=1234567890
 APP_ENVIRONMENT=local
 LOG_TIMEZONE=America/New_York
+SERVER_PORT=3000
+USE_HTTPS=true
+LOG_SERVER_REQUESTS=true
 ```
 
 ## Scripts
