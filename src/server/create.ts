@@ -7,7 +7,7 @@ import http from "http";
 import https from "https";
 import ENV from "../app/env";
 import PATH from "../app/path";
-import { mainEndpoint } from "./api/main";
+import { main } from "./api/main";
 
 function createServerApp() {
     const app = express();
@@ -36,14 +36,14 @@ function createServerApp() {
     }
 
     // API
-    app.get("/", mainEndpoint);
+    app.get("/", main);
 
     // 404
-    app.use((_req, res) => res.status(404).send("Not found."));
+    app.use((request, response) => response.status(404).send("Not found."));
 
     // Error handler
     app.use(
-        (error: any, _request: express.Request, response: express.Response) => {
+        (error: any, request: express.Request, response: express.Response) => {
             console.error(error);
             response.status(500).send("Internal server error.");
         }

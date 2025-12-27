@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
 
-export function mainEndpoint(request: Request, response: Response) {
+export function main(request: Request, response: Response) {
     response.send("Hello");
 }
