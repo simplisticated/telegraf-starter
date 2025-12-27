@@ -1,12 +1,12 @@
-import { isPrivate } from "../../app/context";
-import { parseCommand } from "../../app/message";
+import { isGroup } from "../../common/context";
+import { parseCommand } from "../../common/message";
 import { EngineContext } from "../../session/context";
 
-export default function privateCommand(
+export default async function groupCommand(
     context: EngineContext,
     next: () => Promise<void>
 ) {
-    if (!isPrivate(context)) return next();
+    if (!isGroup(context)) return next();
     if (context.updateType !== "message") return next();
     if (context.message === undefined) return next();
     if (!("text" in context.message)) return next();
@@ -15,9 +15,7 @@ export default function privateCommand(
     if (!data) return next();
 
     switch (data.command) {
-        case "start": {
-            return context.scene.enter("start-scene");
-        }
+        // Here you can implement handler for the command
         default: {
             break;
         }

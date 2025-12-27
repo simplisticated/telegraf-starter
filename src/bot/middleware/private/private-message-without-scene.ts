@@ -1,4 +1,4 @@
-import { isPrivate } from "../../app/context";
+import { isPrivate } from "../../common/context";
 import { EngineContext } from "../../session/context";
 
 export default function privateMessageWithoutScene(

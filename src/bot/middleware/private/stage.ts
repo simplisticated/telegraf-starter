@@ -1,6 +1,6 @@
 import { EngineContext } from "../../session/context";
 import STAGE from "../../scenes";
-import { isPrivate } from "../../app/context";
+import { isPrivate } from "../../common/context";
 
 export default function stage(
     context: EngineContext,

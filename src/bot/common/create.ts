@@ -13,9 +13,9 @@ import privateMessageWithoutScene from "../middleware/private/private-message-wi
 import stage from "../middleware/private/stage";
 import { EngineContext } from "../session/context";
 import queue from "../middleware/common/queue";
-import { isGroup } from "../app/context";
-import { APP_CONFIGURATION } from "../app/configuration";
 import groupCommand from "../middleware/group/group-command";
+import { APP_CONFIGURATION } from "../../app/configuration";
+import { isGroup } from "./context";
 
 export function createBot(token: string): Telegraf<EngineContext> {
     const bot = new Telegraf<EngineContext>(token, {

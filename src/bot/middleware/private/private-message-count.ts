@@ -1,5 +1,5 @@
-import { isPrivate } from "../../app/context";
-import STORE from "../../data/store/store";
+import STORE from "../../../data/store/store";
+import { isPrivate } from "../../common/context";
 import { EngineContext } from "../../session/context";
 
 export default async function privateMessageCount(

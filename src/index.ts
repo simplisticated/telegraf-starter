@@ -2,8 +2,8 @@ import "reflect-metadata";
 import STORE from "./data/store/store";
 import ENV from "./app/env";
 import { setupConsole } from "./app/console";
-import { createBot } from "./bot/create";
-import { launchBot } from "./bot/launch";
+import { createBot } from "./bot/common/create";
+import { launchBot } from "./bot/common/launch";
 
 async function start(): Promise<boolean> {
     setupConsole({

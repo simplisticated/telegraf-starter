@@ -1,4 +1,4 @@
-import { Store } from "../data/store/store";
+import { Store } from "../../data/store/store";
 
 export class SessionStore {
     constructor(

@@ -1,6 +1,6 @@
 import { MiddlewareFn } from "telegraf";
 import { EngineContext } from "../../session/context";
-import { isGroup, isGroupAdministrator } from "../../app/context";
+import { isGroup, isGroupAdministrator } from "../../common/context";
 
 export default function onlyGroupAdministrator(
     middleware: MiddlewareFn<EngineContext>

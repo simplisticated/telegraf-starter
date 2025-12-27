@@ -1,4 +1,4 @@
-import STORE from "../../data/store/store";
+import STORE from "../../../data/store/store";
 import { EngineContext } from "../../session/context";
 
 export default async function userData(

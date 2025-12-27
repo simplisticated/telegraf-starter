@@ -1,4 +1,4 @@
-import { isGroup } from "../../app/context";
+import { isGroup } from "../../common/context";
 import { EngineContext } from "../../session/context";
 
 export default async function groupMessage(

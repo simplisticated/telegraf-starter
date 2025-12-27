@@ -1,5 +1,5 @@
+import { INCOMING_TELEGRAM_UPDATE_QUEUE } from "../../../tasks/instances";
 import { EngineContext } from "../../session/context";
-import { INCOMING_TELEGRAM_UPDATE_QUEUE } from "../../tasks/instances";
 
 export default async function queue(
     context: EngineContext,

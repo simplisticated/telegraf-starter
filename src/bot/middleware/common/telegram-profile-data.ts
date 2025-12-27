@@ -1,5 +1,5 @@
-import { getUserDescription } from "../../app/users";
-import STORE from "../../data/store/store";
+import STORE from "../../../data/store/store";
+import { getUserDescription } from "../../common/users";
 import { EngineContext } from "../../session/context";
 
 export default async function telegramProfileData(
