@@ -518,7 +518,7 @@ export class Store {
 
 const STORE = new Store({
     dataSource: DATA_SOURCE,
-    preferredIsolationLevel: "READ COMMITTED",
+    preferredIsolationLevel: "SERIALIZABLE",
 });
 
 export default STORE;

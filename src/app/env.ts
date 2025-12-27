@@ -95,13 +95,6 @@ const ENV = {
     })(),
     TELEGRAM_TOKEN: getNonEmptyStringListOrThrowError("TELEGRAM_TOKEN"),
     LOG_TIMEZONE: getString("LOG_TIMEZONE") ?? "UTC",
-    DATABASE: {
-        NAME: getNonEmptyStringOrThrowError("DATABASE_NAME"),
-        HOST: getNonEmptyStringOrThrowError("DATABASE_HOST"),
-        PORT: getNumberOrThrowError("DATABASE_PORT"),
-        USERNAME: getNonEmptyStringOrThrowError("DATABASE_USERNAME"),
-        PASSWORD: getNonEmptyStringOrThrowError("DATABASE_PASSWORD"),
-    },
 };
 
 export default ENV;

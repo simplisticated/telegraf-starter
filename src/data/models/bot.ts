@@ -16,13 +16,13 @@ export default class BotModel {
     id!: number;
 
     @CreateDateColumn({
-        type: "timestamp with time zone",
+        type: "datetime",
         nullable: false,
     })
     created!: Date;
 
     @UpdateDateColumn({
-        type: "timestamp with time zone",
+        type: "datetime",
         nullable: true,
     })
     updated?: Date;

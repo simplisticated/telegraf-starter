@@ -3,15 +3,11 @@ import DATABASE_MIGRATIONS from "../migrations";
 import DATABASE_MODELS from "../models";
 import { DATABASE_QUEUE } from "../../tasks/instances";
 import overrideObjectMethod from "../../tasks/override";
-import ENV from "../../app/env";
+import PATH from "../../app/path";
 
 const DATA_SOURCE = new DataSource({
-    type: "postgres",
-    database: ENV.DATABASE.NAME,
-    host: ENV.DATABASE.HOST,
-    port: ENV.DATABASE.PORT,
-    username: ENV.DATABASE.USERNAME,
-    password: ENV.DATABASE.PASSWORD,
+    type: "sqlite",
+    database: PATH.database(),
     synchronize: false,
     logging: false,
     entities: DATABASE_MODELS,
@@ -19,6 +15,7 @@ const DATA_SOURCE = new DataSource({
     migrationsRun: false,
     migrationsTableName: "DatabaseMigrations",
     subscribers: [],
+    enableWAL: true,
 });
 
 overrideObjectMethod(DATA_SOURCE, "transaction", async (source, ...args) =>

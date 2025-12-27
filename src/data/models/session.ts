@@ -21,19 +21,19 @@ export default class SessionModel {
     session_id!: string;
 
     @CreateDateColumn({
-        type: "timestamp with time zone",
+        type: "datetime",
         nullable: false,
     })
     created!: Date;
 
     @UpdateDateColumn({
-        type: "timestamp with time zone",
+        type: "datetime",
         nullable: true,
     })
     updated?: Date;
 
     @Column({
-        type: "jsonb",
+        type: "json",
         nullable: true,
     })
     state?: any;
