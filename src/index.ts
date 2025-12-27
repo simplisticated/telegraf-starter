@@ -4,6 +4,8 @@ import ENV from "./app/env";
 import { setupConsole } from "./app/console";
 import { createBot } from "./bot/common/create";
 import { launchBot } from "./bot/common/launch";
+import PATH from "./app/path";
+import { startServer } from "./server";
 
 async function start(): Promise<boolean> {
     setupConsole({
@@ -28,10 +30,18 @@ async function start(): Promise<boolean> {
     }
     console.log(`Database initialized`);
 
+    await PATH.initializeStructure();
+
     console.log(`Launching bots...`);
     const botList = ENV.TELEGRAM_TOKEN.map(createBot);
     await Promise.allSettled(botList.map(launchBot));
     console.log(`All bots launched`);
+
+    console.log(`Starting server`);
+    const serverLaunched = await startServer(ENV.SERVER_PORT);
+    if (serverLaunched) {
+        console.log(`🚀 Server is listening on port ${ENV.SERVER_PORT}`);
+    }
 
     return true;
 }
