@@ -1,8 +1,7 @@
-import { Telegraf } from "telegraf";
-import { EngineContext } from "../session/context";
+import { Context, Telegraf } from "telegraf";
 
-export async function launchBot(
-    bot: Telegraf<EngineContext>
+export async function launchBot<TelegrafContext extends Context>(
+    bot: Telegraf<TelegrafContext>
 ): Promise<boolean> {
     return new Promise(resolve => {
         try {

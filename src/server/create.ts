@@ -8,6 +8,8 @@ import https from "https";
 import ENV from "../app/env";
 import PATH from "../app/path";
 import { main } from "./api/main";
+import { launchBot } from "./api/bot/launch";
+import { stopBot } from "./api/bot/stop";
 
 function createServerApp() {
     const app = express();
@@ -24,6 +26,7 @@ function createServerApp() {
             const report = [
                 request.method,
                 request.url,
+                request.body !== undefined &&
                 Object.keys(request.body).length > 0
                     ? JSON.stringify(request.body, null, 2)
                     : undefined,
@@ -37,6 +40,8 @@ function createServerApp() {
 
     // API
     app.get("/", main);
+    app.get("/bot/launch", launchBot);
+    app.get("/bot/stop", stopBot);
 
     // 404
     app.use((request, response) => response.status(404).send("Not found."));

@@ -3,9 +3,9 @@ import STORE from "./data/store/store";
 import ENV from "./app/env";
 import { setupConsole } from "./app/console";
 import { createBot } from "./bot/common/create";
-import { launchBot } from "./bot/common/launch";
 import PATH from "./app/path";
 import { launchServer } from "./server/launch";
+import BOT_MANAGER from "./bot/common/manager";
 
 async function start(): Promise<boolean> {
     setupConsole({
@@ -34,7 +34,8 @@ async function start(): Promise<boolean> {
 
     console.log(`Launching bots...`);
     const botList = ENV.TELEGRAM_TOKEN.map(createBot);
-    await Promise.allSettled(botList.map(launchBot));
+    BOT_MANAGER.add(botList);
+    await BOT_MANAGER.launch();
     console.log(`All bots launched`);
 
     console.log(`Starting server`);
