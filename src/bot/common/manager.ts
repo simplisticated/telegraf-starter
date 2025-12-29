@@ -5,54 +5,90 @@ import { launchBot } from "./launch";
 import { EngineContext } from "../session/context";
 
 class BotManager<TelegrafContext extends Context> {
-    private botList: BotState<TelegrafContext>[] = [];
+    private botInstances: BotInstance<TelegrafContext>[] = [];
 
-    add(bot: Telegraf<TelegrafContext> | Telegraf<TelegrafContext>[]) {
-        if (Array.isArray(bot)) {
-            this.botList.push(
-                ...bot.map(value => ({
-                    bot: value,
-                    isActive: false,
-                }))
-            );
-        } else {
-            this.botList.push({
-                bot,
+    add(bot: Bot<TelegrafContext> | Bot<TelegrafContext>[]) {
+        const getData = (
+            value: Bot<TelegrafContext>
+        ): BotInstance<TelegrafContext> => ({
+            bot: value,
+            state: {
                 isActive: false,
-            });
+            },
+        });
+        if (Array.isArray(bot)) {
+            this.botInstances.push(...bot.map(getData));
+        } else {
+            this.botInstances.push(getData(bot));
         }
     }
 
-    launch() {
-        return Promise.allSettled(
-            this.botList.map(state => {
-                state.isActive = true;
-                return launchBot(state.bot);
-            })
+    getAll(): BotInstance<TelegrafContext>[] {
+        return Array.from(this.botInstances);
+    }
+
+    get(id: string): BotInstance<TelegrafContext> | null {
+        return (
+            this.botInstances.find(
+                instance => instance.bot.botInfo?.id.toString() === id
+            ) ?? null
         );
     }
 
-    stop(id?: string, reason?: string) {
-        if (id) {
-            const stateForSelectedBot = this.botList.find(
-                state => state.bot.botInfo?.id.toString() === id
-            );
-            if (stateForSelectedBot) {
-                stateForSelectedBot.bot.stop(reason);
-                stateForSelectedBot.isActive = false;
+    async launch(id?: string): Promise<string[]> {
+        const launched: string[] = [];
+        const instancesToLaunch = (() => {
+            if (id) {
+                const result = this.botInstances.find(
+                    instance => instance.bot.botInfo?.id.toString() === id
+                );
+                return result ? [result] : [];
             }
-        } else {
-            const filteredState = this.botList.filter(state => state.isActive);
-            for (const state of filteredState) {
-                state.bot.stop(reason);
-                state.isActive = false;
+            return this.botInstances;
+        })();
+        await Promise.allSettled(
+            instancesToLaunch.map(async instance => {
+                const result = await launchBot(instance.bot);
+                if (result) {
+                    instance.state.isActive = true;
+                    launched.push(instance.bot.botInfo?.id.toString() ?? "");
+                }
+                return result;
+            })
+        );
+        return launched;
+    }
+
+    stop(id?: string, reason?: string): string[] {
+        const stopped: string[] = [];
+        const instancesToStop = (() => {
+            if (id) {
+                const result = this.botInstances.find(
+                    instance => instance.bot.botInfo?.id.toString() === id
+                );
+                return result ? [result] : [];
             }
+            return this.botInstances;
+        })();
+
+        for (const instance of instancesToStop) {
+            instance.bot.stop(reason);
+            instance.state.isActive = false;
+            stopped.push(instance.bot.botInfo?.id.toString() ?? "");
         }
+
+        return stopped;
     }
 }
 
-interface BotState<TelegrafContext extends Context> {
-    bot: Telegraf<TelegrafContext>;
+type Bot<TelegrafContext extends Context> = Telegraf<TelegrafContext>;
+
+interface BotInstance<TelegrafContext extends Context> {
+    bot: Bot<TelegrafContext>;
+    state: BotState;
+}
+
+interface BotState {
     isActive: boolean;
 }
 
