@@ -5,6 +5,8 @@ import cors from "cors";
 import * as fsPromises from "fs/promises";
 import http from "http";
 import https from "https";
+import path from "path";
+import { engine } from "express-handlebars";
 import ENV from "../app/env";
 import PATH from "../app/path";
 import { main } from "./api/main";
@@ -16,10 +18,25 @@ function createServerApp() {
 
     app.use(cors());
     app.use(compression());
-    app.use(helmet());
+    app.use(
+        helmet({
+            contentSecurityPolicy: false,
+        })
+    );
     app.disable("x-powered-by");
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
+
+    app.engine(
+        "hbs",
+        engine({
+            extname: "hbs",
+            defaultLayout: false,
+            partialsDir: path.join(__dirname, "views/fragments"),
+        })
+    );
+    app.set("view engine", "hbs");
+    app.set("views", path.join(__dirname, "views"));
 
     if (ENV.LOG_SERVER_REQUESTS) {
         app.use((request, response, next) => {
@@ -42,6 +59,13 @@ function createServerApp() {
     app.get("/", main);
     app.get("/bot/launch", launchBot);
     app.get("/bot/stop", stopBot);
+    app.get("/main", (request, response) => {
+        response.render("pages/main", {
+            data: {
+                title: "Main",
+            },
+        });
+    });
 
     // 404
     app.use((request, response) => response.status(404).send("Not found."));
