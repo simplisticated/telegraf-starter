@@ -4,6 +4,8 @@
 
 <div class="space-y-6">
 
+    {{#if telegramProfile}}
+
     <!-- Card 1 — Basic Info -->
     <div class="bg-gray-900 border border-gray-800 rounded-xl shadow p-6">
 
@@ -141,5 +143,11 @@
         {{/if}}
 
     </div>
+
+    {{else}}
+
+    Data not found
+
+    {{/if}}
 
 </div>

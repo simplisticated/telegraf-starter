@@ -74,7 +74,7 @@ function createServerApp() {
             },
         });
     });
-    app.get("/telegram-profiles", async (request, response) => {
+    app.get("/users", async (request, response) => {
         const telegramProfiles = await STORE.getTelegramProfiles();
         telegramProfiles.sort(
             (left, right) =>
@@ -83,18 +83,20 @@ function createServerApp() {
         );
         response.render("pages/telegram-profiles", {
             data: {
-                title: "Telegram Profiles",
+                title: "Users",
                 telegramProfiles,
             },
         });
     });
-    app.get("/telegram-profiles/:id", async (request, response) => {
+    app.get("/users/:id", async (request, response) => {
         const { id } = request.params;
-        if (typeof id !== "string") return;
-        const telegramProfile = await STORE.getTelegramProfileByTelegramId(id);
+        const telegramProfile =
+            typeof id !== "string"
+                ? await STORE.getTelegramProfileByTelegramId(id)
+                : null;
         response.render("pages/telegram-profile", {
             data: {
-                title: "Telegram Profiles",
+                title: `User ${id}`,
                 telegramProfile,
             },
         });
