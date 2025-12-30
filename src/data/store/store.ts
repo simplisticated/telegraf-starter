@@ -279,7 +279,7 @@ export class Store {
         }
     }
 
-    async getBots(where: FindOptionsWhere<BotModel>): Promise<BotModel[]> {
+    async getBots(where?: FindOptionsWhere<BotModel>): Promise<BotModel[]> {
         try {
             return await this.configuration.dataSource
                 .getRepository(BotModel)
@@ -404,6 +404,21 @@ export class Store {
         } catch (error) {
             console.error(error);
             return false;
+        }
+    }
+
+    async getTelegramProfiles(
+        where?: FindOptionsWhere<TelegramProfileModel>
+    ): Promise<TelegramProfileModel[]> {
+        try {
+            return await this.configuration.dataSource
+                .getRepository(TelegramProfileModel)
+                .find({
+                    where,
+                });
+        } catch (error) {
+            console.error(error);
+            return [];
         }
     }
 

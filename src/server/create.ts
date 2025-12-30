@@ -67,11 +67,15 @@ function createServerApp() {
         });
     });
     app.get("/users", async (request, response) => {
-        const users = await STORE.getUsers();
+        const telegramProfiles = await STORE.getTelegramProfiles();
+        const result = telegramProfiles.map(telegramProfile => ({
+            telegramProfile,
+            bots: telegramProfile.users.map(user => user.bot),
+        }));
         response.render("pages/users", {
             data: {
                 title: "Users",
-                users,
+                telegramProfiles: result,
             },
         });
     });
