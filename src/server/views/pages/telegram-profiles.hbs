@@ -26,24 +26,29 @@
                     >
                         Is premium
                     </th>
+                    <th
+                        class="px-6 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider"
+                    >
+                        Bots
+                    </th>
                 </tr>
             </thead>
 
             <tbody class="divide-y divide-gray-800">
 
-                {{#each data.users}}
+                {{#each data.telegramProfiles}}
                     <tr class="hover:bg-gray-800/60 transition">
                         <td class="px-6 py-4 text-sm text-gray-200">
-                            {{telegramProfile.telegram_id}}
+                            {{telegram_id}}
                         </td>
 
                         <td class="px-6 py-4 text-sm">
-                            {{#if telegramProfile.username}}
+                            {{#if username}}
                                 <a
-                                    href="https://t.me/{{telegramProfile.username}}"
+                                    href="https://t.me/{{username}}"
                                     class="text-blue-400 hover:text-blue-300 hover:underline"
                                 >
-                                    @{{telegramProfile.username}}
+                                    @{{username}}
                                 </a>
                             {{else}}
                                 <span class="text-gray-500">No</span>
@@ -51,7 +56,7 @@
                         </td>
 
                         <td class="px-6 py-4">
-                            {{#if telegramProfile.is_premium}}
+                            {{#if is_premium}}
                                 <span
                                     class="inline-flex px-2 py-1 rounded-full text-xs font-medium bg-emerald-900/40 text-emerald-300 border border-emerald-800"
                                 >
@@ -64,6 +69,16 @@
                                     No
                                 </span>
                             {{/if}}
+                        </td>
+
+                        <td class="px-6 py-4 text-sm">
+                            {{#each users}}
+                              <p>
+                                <a href="https://t.me/{{bot.username}}" class="text-blue-400 hover:text-blue-300 hover:underline">
+                                  @{{bot.username}}
+                                </a>
+                              </p>
+                            {{/each}}
                         </td>
                     </tr>
                 {{/each}}

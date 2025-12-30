@@ -66,16 +66,12 @@ function createServerApp() {
             },
         });
     });
-    app.get("/users", async (request, response) => {
+    app.get("/telegram-profiles", async (request, response) => {
         const telegramProfiles = await STORE.getTelegramProfiles();
-        const result = telegramProfiles.map(telegramProfile => ({
-            telegramProfile,
-            bots: telegramProfile.users.map(user => user.bot),
-        }));
-        response.render("pages/users", {
+        response.render("pages/telegram-profiles", {
             data: {
-                title: "Users",
-                telegramProfiles: result,
+                title: "Telegram Profiles",
+                telegramProfiles,
             },
         });
     });

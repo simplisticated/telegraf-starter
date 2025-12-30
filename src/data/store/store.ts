@@ -26,6 +26,23 @@ export class Store {
         }
     }
 
+    async getUsers(where?: FindOptionsWhere<UserModel>): Promise<UserModel[]> {
+        try {
+            return await this.configuration.dataSource
+                .getRepository(UserModel)
+                .find({
+                    where,
+                    relations: {
+                        telegramProfile: true,
+                        bot: true,
+                    },
+                });
+        } catch (error) {
+            console.error(error);
+            return [];
+        }
+    }
+
     async getUser(
         where: FindOptionsWhere<UserModel>
     ): Promise<UserModel | null> {
@@ -42,23 +59,6 @@ export class Store {
         } catch (error) {
             console.error(error);
             return null;
-        }
-    }
-
-    async getUsers(where?: FindOptionsWhere<UserModel>): Promise<UserModel[]> {
-        try {
-            return await this.configuration.dataSource
-                .getRepository(UserModel)
-                .find({
-                    where,
-                    relations: {
-                        telegramProfile: true,
-                        bot: true,
-                    },
-                });
-        } catch (error) {
-            console.error(error);
-            return [];
         }
     }
 
@@ -266,29 +266,39 @@ export class Store {
         }
     }
 
-    async getBot(where: FindOptionsWhere<BotModel>): Promise<BotModel | null> {
-        try {
-            return await this.configuration.dataSource
-                .getRepository(BotModel)
-                .findOne({
-                    where,
-                });
-        } catch (error) {
-            console.error(error);
-            return null;
-        }
-    }
-
     async getBots(where?: FindOptionsWhere<BotModel>): Promise<BotModel[]> {
         try {
             return await this.configuration.dataSource
                 .getRepository(BotModel)
                 .find({
                     where,
+                    relations: {
+                        users: {
+                            telegramProfile: true,
+                        },
+                    },
                 });
         } catch (error) {
             console.error(error);
             return [];
+        }
+    }
+
+    async getBot(where: FindOptionsWhere<BotModel>): Promise<BotModel | null> {
+        try {
+            return await this.configuration.dataSource
+                .getRepository(BotModel)
+                .findOne({
+                    where,
+                    relations: {
+                        users: {
+                            telegramProfile: true,
+                        },
+                    },
+                });
+        } catch (error) {
+            console.error(error);
+            return null;
         }
     }
 
@@ -415,6 +425,11 @@ export class Store {
                 .getRepository(TelegramProfileModel)
                 .find({
                     where,
+                    relations: {
+                        users: {
+                            bot: true,
+                        },
+                    },
                 });
         } catch (error) {
             console.error(error);
@@ -430,6 +445,11 @@ export class Store {
                 .getRepository(TelegramProfileModel)
                 .findOne({
                     where,
+                    relations: {
+                        users: {
+                            bot: true,
+                        },
+                    },
                 });
         } catch (error) {
             console.error(error);
