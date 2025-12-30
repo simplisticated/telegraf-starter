@@ -1,70 +1,75 @@
 <h1 class="text-xl font-semibold mb-6 text-gray-100">
-  Dashboard
+    Dashboard
 </h1>
 
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
 
-  <!-- Total -->
-  <div class="bg-gray-900 border border-gray-800 rounded-2xl shadow p-5 hover:border-gray-700 transition">
-    <div class="text-gray-400 text-xs uppercase mb-2 tracking-wider">
-      Total Users
+    <!-- Total -->
+    <div
+        class="bg-gray-900 border border-gray-800 rounded-2xl shadow p-5 hover:border-gray-700 transition"
+    >
+        <div class="text-gray-400 text-xs uppercase mb-2 tracking-wider">
+            Total Users
+        </div>
+
+        <div class="text-3xl font-semibold text-gray-100">
+            {{data.telegramProfiles.count}}
+        </div>
+
+        <div class="text-xs text-gray-500 mt-2">
+            All time
+        </div>
     </div>
 
-    <div class="text-3xl font-semibold text-gray-100">
-      {{data.telegramProfiles.count}}
+    <!-- Day -->
+    <div
+        class="bg-gray-900 border border-gray-800 rounded-2xl shadow p-5 hover:border-gray-700 transition"
+    >
+        <div class="text-gray-400 text-xs uppercase mb-2 tracking-wider">
+            Active Today
+        </div>
+
+        <div class="text-3xl font-semibold text-gray-100">
+            {{data.telegramProfiles.active.day}}
+        </div>
+
+        <div class="text-xs text-gray-500 mt-2">
+            updated in last 24h
+        </div>
     </div>
 
-    <div class="text-xs text-gray-500 mt-2">
-      All time
-    </div>
-  </div>
+    <!-- Week -->
+    <div
+        class="bg-gray-900 border border-gray-800 rounded-2xl shadow p-5 hover:border-gray-700 transition"
+    >
+        <div class="text-gray-400 text-xs uppercase mb-2 tracking-wider">
+            Active This Week
+        </div>
 
+        <div class="text-3xl font-semibold text-gray-100">
+            {{data.telegramProfiles.active.week}}
+        </div>
 
-  <!-- Day -->
-  <div class="bg-gray-900 border border-gray-800 rounded-2xl shadow p-5 hover:border-gray-700 transition">
-    <div class="text-gray-400 text-xs uppercase mb-2 tracking-wider">
-      Active Today
-    </div>
-
-    <div class="text-3xl font-semibold text-gray-100">
-      {{data.telegramProfiles.active.day}}
-    </div>
-
-    <div class="text-xs text-gray-500 mt-2">
-      updated in last 24h
-    </div>
-  </div>
-
-
-  <!-- Week -->
-  <div class="bg-gray-900 border border-gray-800 rounded-2xl shadow p-5 hover:border-gray-700 transition">
-    <div class="text-gray-400 text-xs uppercase mb-2 tracking-wider">
-      Active This Week
+        <div class="text-xs text-gray-500 mt-2">
+            last 7 days
+        </div>
     </div>
 
-    <div class="text-3xl font-semibold text-gray-100">
-      {{data.telegramProfiles.active.week}}
-    </div>
+    <!-- Month -->
+    <div
+        class="bg-gray-900 border border-gray-800 rounded-2xl shadow p-5 hover:border-gray-700 transition"
+    >
+        <div class="text-gray-400 text-xs uppercase mb-2 tracking-wider">
+            Active This Month
+        </div>
 
-    <div class="text-xs text-gray-500 mt-2">
-      last 7 days
-    </div>
-  </div>
+        <div class="text-3xl font-semibold text-gray-100">
+            {{data.telegramProfiles.active.month}}
+        </div>
 
-
-  <!-- Month -->
-  <div class="bg-gray-900 border border-gray-800 rounded-2xl shadow p-5 hover:border-gray-700 transition">
-    <div class="text-gray-400 text-xs uppercase mb-2 tracking-wider">
-      Active This Month
+        <div class="text-xs text-gray-500 mt-2">
+            last 30 days
+        </div>
     </div>
-
-    <div class="text-3xl font-semibold text-gray-100">
-      {{data.telegramProfiles.active.month}}
-    </div>
-
-    <div class="text-xs text-gray-500 mt-2">
-      last 30 days
-    </div>
-  </div>
 
 </div>
