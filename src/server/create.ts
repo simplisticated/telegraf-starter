@@ -12,6 +12,7 @@ import PATH from "../app/path";
 import { launchBot } from "./api/bot/launch";
 import { stopBot } from "./api/bot/stop";
 import STORE from "../data/store/store";
+import { getClientIpAddress } from "../app/ip-address";
 
 function createServerApp() {
     const app = express();
@@ -44,6 +45,7 @@ function createServerApp() {
     if (ENV.LOG_SERVER_REQUESTS) {
         app.use((request, response, next) => {
             const report = [
+                getClientIpAddress(request),
                 request.method,
                 request.url,
                 request.body !== undefined &&
