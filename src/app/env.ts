@@ -95,6 +95,7 @@ const ENV = {
     })(),
     TELEGRAM_TOKEN: getNonEmptyStringListOrThrowError("TELEGRAM_TOKEN"),
     LOG_TIMEZONE: getString("LOG_TIMEZONE") ?? "UTC",
+    SERVER_HOSTNAME: getString("SERVER_HOSTNAME"),
     SERVER_PORT: getNumber("SERVER_PORT") ?? 3000,
     USE_HTTPS: getBoolean("USE_HTTPS") ?? false,
     LOG_SERVER_REQUESTS: getBoolean("LOG_SERVER_REQUESTS") ?? false,

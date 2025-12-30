@@ -35,16 +35,23 @@ class BotManager<TelegrafContext extends Context> {
         );
     }
 
-    async launch(id?: string): Promise<string[]> {
+    async launch(identifierOrUsername?: string): Promise<string[]> {
         const launched: string[] = [];
         const instancesToLaunch = (() => {
-            if (id) {
-                const result = this.botInstances.find(
-                    instance => instance.bot.botInfo?.id.toString() === id
-                );
+            if (identifierOrUsername) {
+                const result = this.botInstances.find(instance => {
+                    const botInformation = instance.bot.botInfo;
+                    if (!botInformation) return false;
+                    return (
+                        botInformation.id.toString() === identifierOrUsername ||
+                        botInformation.username === identifierOrUsername
+                    );
+                });
                 return result ? [result] : [];
             }
-            return this.botInstances;
+            return this.botInstances.filter(
+                instance => !instance.state.isActive
+            );
         })();
         await Promise.allSettled(
             instancesToLaunch.map(async instance => {
@@ -59,16 +66,23 @@ class BotManager<TelegrafContext extends Context> {
         return launched;
     }
 
-    stop(id?: string, reason?: string): string[] {
+    stop(identifierOrUsername?: string, reason?: string): string[] {
         const stopped: string[] = [];
         const instancesToStop = (() => {
-            if (id) {
-                const result = this.botInstances.find(
-                    instance => instance.bot.botInfo?.id.toString() === id
-                );
+            if (identifierOrUsername) {
+                const result = this.botInstances.find(instance => {
+                    const botInformation = instance.bot.botInfo;
+                    if (!botInformation) return false;
+                    return (
+                        botInformation.id.toString() === identifierOrUsername ||
+                        botInformation.username === identifierOrUsername
+                    );
+                });
                 return result ? [result] : [];
             }
-            return this.botInstances;
+            return this.botInstances.filter(
+                instance => instance.state.isActive
+            );
         })();
 
         for (const instance of instancesToStop) {

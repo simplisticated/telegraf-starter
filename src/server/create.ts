@@ -60,7 +60,7 @@ function createServerApp() {
 
     // API
     app.get("/", async (request, response) => {
-        response.render("pages/main", {
+        response.render("pages/dashboard", {
             data: {
                 title: "Admin Panel",
                 telegramProfiles: {
@@ -81,7 +81,7 @@ function createServerApp() {
                 (right.updated ?? right.created).getTime() -
                 (left.updated ?? left.created).getTime()
         );
-        response.render("pages/telegram-profiles", {
+        response.render("pages/telegram-profiles/list", {
             data: {
                 title: "Users",
                 telegramProfiles,
@@ -94,7 +94,7 @@ function createServerApp() {
             typeof id === "string"
                 ? await STORE.getTelegramProfileByTelegramId(id)
                 : null;
-        response.render("pages/telegram-profile", {
+        response.render("pages/telegram-profiles/id", {
             data: {
                 title: `User ${id}`,
                 telegramProfile,
@@ -102,7 +102,11 @@ function createServerApp() {
         });
     });
     app.get("/api/bot/launch", launchBot);
+    app.get("/api/bot/launch/:id", launchBot);
+    app.get("/api/bot/launch/:username", launchBot);
     app.get("/api/bot/stop", stopBot);
+    app.get("/api/bot/stop/:id", stopBot);
+    app.get("/api/bot/stop/:username", stopBot);
 
     // 404
     app.use((request, response) => response.status(404).send("Not found."));

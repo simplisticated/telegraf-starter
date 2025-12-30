@@ -71,15 +71,18 @@ Here are the essential environment variables and their purposes:
 
 -   `TELEGRAM_TOKEN`: Specifies the token that is used for Telegram bot.
 -   `APP_ENVIRONMENT`: `production`, `test`, or `local`. See more information
-    [here](#app-environment).
+    [here](#app-environment). If not defined, `local` will be used by default.
 -   `LOG_TIMEZONE`: Name of the timezone that will be used for console output.
     -   This should be a timezone string, for example: `UTC`, `Europe/London`,
         `America/New_York`, etc.
     -   This value will be passed to the `timeZone` field in
         `DateTimeFormatOptions` for logging purposes.
+-   `SERVER_HOSTNAME`: Public name of the host. This variable is optional. If
+    it's not set, the local network will be used.
 -   `SERVER_PORT`: Defines the port on which the server will listen. If not
     provided, the default port is 3000.
--   `USE_HTTPS`: If set to `true`, HTTPS will be used for the server.
+-   `USE_HTTPS`: If set to `true`, HTTPS will be used for the server. By
+    default, the value is `false`.
 -   `LOG_SERVER_REQUESTS`: This variable controls whether request logging is
     enabled. When set to `true`, the server logs requests, including the date,
     HTTP method, URL, and request body.

@@ -2,13 +2,17 @@ import { Request, Response } from "express";
 import BOT_MANAGER from "../../../bot/common/manager";
 
 export function stopBot(request: Request, response: Response) {
-    const { id } = request.query;
-    if (typeof id !== "string") {
+    const { id, username } = request.params;
+    const identifierOrUsername = id ?? username;
+    if (
+        typeof identifierOrUsername !== "string" &&
+        typeof identifierOrUsername !== "undefined"
+    ) {
         response.status(400).send("Wrong request");
         return;
     }
 
-    const result = BOT_MANAGER.stop(id);
+    const result = BOT_MANAGER.stop(identifierOrUsername);
     response.json({
         stopped: result.map(botId => {
             const instance = BOT_MANAGER.get(botId);
