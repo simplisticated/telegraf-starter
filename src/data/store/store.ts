@@ -1,4 +1,4 @@
-import { DataSource, FindOptionsWhere } from "typeorm";
+import { DataSource, FindOptionsWhere, MoreThanOrEqual } from "typeorm";
 import { IsolationLevel } from "typeorm/driver/types/IsolationLevel";
 import TelegramProfileModel from "../models/telegram-profile";
 import DATA_SOURCE from "./data-source";
@@ -415,6 +415,36 @@ export class Store {
             console.error(error);
             return false;
         }
+    }
+
+    async getTelegramProfilesCount(
+        where?: FindOptionsWhere<TelegramProfileModel>
+    ): Promise<number | null> {
+        try {
+            return await this.configuration.dataSource
+                .getRepository(TelegramProfileModel)
+                .count({
+                    where,
+                    relations: {
+                        users: {
+                            bot: true,
+                        },
+                    },
+                });
+        } catch (error) {
+            console.error(error);
+            return null;
+        }
+    }
+
+    async getActiveTelegramProfilesCount(
+        numberOfDays: number
+    ): Promise<number | null> {
+        return this.getTelegramProfilesCount({
+            updated: MoreThanOrEqual(
+                new Date(Date.now() - numberOfDays * 24 * 3600 * 1000)
+            ),
+        });
     }
 
     async getTelegramProfiles(

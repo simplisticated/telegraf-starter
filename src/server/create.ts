@@ -59,15 +59,28 @@ function createServerApp() {
     }
 
     // API
-    app.get("/", (request, response) => {
+    app.get("/", async (request, response) => {
         response.render("pages/main", {
             data: {
-                title: "Main",
+                title: "Admin Panel",
+                telegramProfiles: {
+                    count: (await STORE.getTelegramProfilesCount()) ?? 0,
+                    active: {
+                        day: await STORE.getActiveTelegramProfilesCount(1),
+                        week: await STORE.getActiveTelegramProfilesCount(7),
+                        month: await STORE.getActiveTelegramProfilesCount(30),
+                    },
+                },
             },
         });
     });
     app.get("/telegram-profiles", async (request, response) => {
         const telegramProfiles = await STORE.getTelegramProfiles();
+        telegramProfiles.sort(
+            (left, right) =>
+                (right.updated ?? right.created).getTime() -
+                (left.updated ?? left.created).getTime()
+        );
         response.render("pages/telegram-profiles", {
             data: {
                 title: "Telegram Profiles",
