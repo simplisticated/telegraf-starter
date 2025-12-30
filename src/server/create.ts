@@ -91,7 +91,7 @@ function createServerApp() {
     app.get("/users/:id", async (request, response) => {
         const { id } = request.params;
         const telegramProfile =
-            typeof id !== "string"
+            typeof id === "string"
                 ? await STORE.getTelegramProfileByTelegramId(id)
                 : null;
         response.render("pages/telegram-profile", {

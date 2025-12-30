@@ -42,7 +42,9 @@
             {{#each data.telegramProfiles}}
                 <tr class="hover:bg-gray-800/60 transition">
                     <td class="px-6 py-4 text-sm text-gray-200">
-                        {{telegram_id}}
+                        <a href="/users/{{telegram_id}}">
+                            {{telegram_id}}
+                        </a>
                     </td>
 
                     <td class="px-6 py-4 text-sm">
@@ -50,6 +52,7 @@
                             <a
                                 href="https://t.me/{{username}}"
                                 class="text-blue-400 hover:text-blue-300 hover:underline"
+                                target="_blank"
                             >
                                 @{{username}}
                             </a>
@@ -85,6 +88,7 @@
                                 <a
                                     href="https://t.me/{{bot.username}}"
                                     class="text-blue-400 hover:text-blue-300 hover:underline"
+                                    target="_blank"
                                 >
                                     @{{bot.username}}
                                 </a>
