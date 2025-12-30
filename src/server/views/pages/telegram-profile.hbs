@@ -1,0 +1,137 @@
+<h1 class="text-xl font-semibold mb-6 text-gray-100">
+  Telegram Profile
+</h1>
+
+<div class="space-y-6">
+
+  <!-- Card 1 — Basic Info -->
+  <div class="bg-gray-900 border border-gray-800 rounded-xl shadow p-6">
+
+    <h2 class="text-lg font-semibold mb-4 text-gray-200">
+      General Information
+    </h2>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-6 text-sm">
+
+        <div>
+        <div class="text-gray-400 text-xs uppercase">Internal ID</div>
+        <div class="text-gray-200">
+          {{data.telegramProfile.id}}
+        </div>
+      </div>
+
+      <div>
+        <div class="text-gray-400 text-xs uppercase">Telegram ID</div>
+        <div class="text-gray-200 font-mono">
+          {{data.telegramProfile.telegram_id}}
+        </div>
+      </div>
+
+      <div>
+        <div class="text-gray-400 text-xs uppercase">Username</div>
+
+        {{#if data.telegramProfile.username}}
+          <a
+            href="https://t.me/{{data.telegramProfile.username}}"
+            class="text-blue-400 hover:text-blue-300 hover:underline"
+          >
+            @{{data.telegramProfile.username}}
+          </a>
+        {{else}}
+          <span class="text-gray-500">Not set</span>
+        {{/if}}
+      </div>
+
+      <div>
+        <div class="text-gray-400 text-xs uppercase">Full name</div>
+        <div class="text-gray-200">
+          {{data.telegramProfile.first_name}} {{data.telegramProfile.last_name}}
+        </div>
+      </div>
+
+      <div>
+        <div class="text-gray-400 text-xs uppercase">Premium</div>
+
+        {{#if data.telegramProfile.is_premium}}
+          <span class="inline-flex px-2 py-1 text-xs rounded-full bg-emerald-900/40 text-emerald-300 border border-emerald-800">
+            Yes
+          </span>
+        {{else}}
+          <span class="inline-flex px-2 py-1 text-xs rounded-full bg-gray-800 text-gray-400 border border-gray-700">
+            No
+          </span>
+        {{/if}}
+      </div>
+
+      <div>
+        <div class="text-gray-400 text-xs uppercase">Language</div>
+        <div class="text-gray-200">
+          {{data.telegramProfile.language_code}}
+        </div>
+      </div>
+
+      <div>
+        <div class="text-gray-400 text-xs uppercase">Created</div>
+        <div class="text-gray-200">
+          {{data.telegramProfile.created}}
+        </div>
+      </div>
+
+      <div>
+        <div class="text-gray-400 text-xs uppercase">Updated</div>
+        <div class="text-gray-200">
+          {{data.telegramProfile.updated}}
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- Card 2 — Linked Bots / Users -->
+  <div class="bg-gray-900 border border-gray-800 rounded-xl shadow p-6">
+
+    <h2 class="text-lg font-semibold mb-4 text-gray-200">
+      Linked Bots
+    </h2>
+
+    {{#if data.telegramProfile.users.length}}
+
+      <ul class="space-y-2">
+
+        {{#each data.telegramProfile.users}}
+          <li class="flex justify-between items-center bg-gray-800/40 rounded-lg px-4 py-2">
+            <div>
+
+              <a
+                href="https://t.me/{{bot.username}}"
+                class="text-blue-400 hover:text-blue-300 hover:underline"
+              >
+                @{{bot.username}}
+              </a>
+
+              <div class="text-xs text-gray-400">
+                Internal user id: {{id}}
+              </div>
+
+            </div>
+
+            <span class="text-gray-400 text-xs px-2">
+              Joined: {{created}}
+            </span>
+          </li>
+        {{/each}}
+
+      </ul>
+
+    {{else}}
+
+      <p class="text-gray-500">
+        No linked bots.
+      </p>
+
+    {{/if}}
+
+  </div>
+
+</div>

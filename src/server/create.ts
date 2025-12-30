@@ -75,6 +75,17 @@ function createServerApp() {
             },
         });
     });
+    app.get("/telegram-profiles/:id", async (request, response) => {
+        const { id } = request.params;
+        if (typeof id !== "string") return;
+        const telegramProfile = await STORE.getTelegramProfileByTelegramId(id);
+        response.render("pages/telegram-profile", {
+            data: {
+                title: "Telegram Profiles",
+                telegramProfile,
+            },
+        });
+    });
     app.get("/api/bot/launch", launchBot);
     app.get("/api/bot/stop", stopBot);
 
