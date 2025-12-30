@@ -45,7 +45,7 @@ export class Store {
         }
     }
 
-    async getUsers(where: FindOptionsWhere<UserModel>): Promise<UserModel[]> {
+    async getUsers(where?: FindOptionsWhere<UserModel>): Promise<UserModel[]> {
         try {
             return await this.configuration.dataSource
                 .getRepository(UserModel)

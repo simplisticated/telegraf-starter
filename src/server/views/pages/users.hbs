@@ -1,0 +1,55 @@
+<div class="container mx-auto px-4 py-6">
+
+  <div class="overflow-x-auto bg-white rounded-xl shadow">
+    <table class="min-w-full divide-y divide-gray-200">
+      
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+            ID
+          </th>
+          <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+            Username
+          </th>
+          <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+            Is premium
+          </th>
+        </tr>
+      </thead>
+
+      <tbody class="divide-y divide-gray-200">
+
+  {{#each data.users}}
+  <tr>
+    <td class="px-6 py-4 text-sm">
+      {{telegramProfile.telegram_id}}
+    </td>
+
+    <td class="px-6 py-4 text-sm">
+      {{#if telegramProfile.username}}
+        <a href="https://t.me/{{telegramProfile.username}}">@{{telegramProfile.username}}</a>
+      {{else}}
+        No
+      {{/if}}
+    </td>
+
+    <td class="px-6 py-4">
+      {{#if telegramProfile.is_premium}}
+        <span class="inline-flex px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
+          Yes
+        </span>
+      {{else}}
+        <span class="inline-flex px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
+          No
+        </span>
+      {{/if}}
+    </td>
+  </tr>
+  {{/each}}
+
+</tbody>
+
+    </table>
+  </div>
+
+</div>

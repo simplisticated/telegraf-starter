@@ -11,6 +11,7 @@ import ENV from "../app/env";
 import PATH from "../app/path";
 import { launchBot } from "./api/bot/launch";
 import { stopBot } from "./api/bot/stop";
+import STORE from "../data/store/store";
 
 function createServerApp() {
     const app = express();
@@ -30,8 +31,9 @@ function createServerApp() {
         "hbs",
         engine({
             extname: "hbs",
-            defaultLayout: false,
+            layoutsDir: path.join(__dirname, "views/layouts"),
             partialsDir: path.join(__dirname, "views/fragments"),
+            defaultLayout: "main",
         })
     );
     app.set("view engine", "hbs");
@@ -57,10 +59,19 @@ function createServerApp() {
     }
 
     // API
-    app.get("/main", (request, response) => {
+    app.get("/", (request, response) => {
         response.render("pages/main", {
             data: {
                 title: "Main",
+            },
+        });
+    });
+    app.get("/users", async (request, response) => {
+        const users = await STORE.getUsers();
+        response.render("pages/users", {
+            data: {
+                title: "Users",
+                users,
             },
         });
     });
