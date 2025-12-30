@@ -1,0 +1,55 @@
+{
+    "short_name": "App",
+    "name": "App",
+    "icons": [
+        {
+            "src": "images/icons/favicon_16_16.ico",
+            "type": "image/x-icon",
+            "sizes": "16x16"
+        },
+        {
+            "src": "images/icons/favicon_32_32.ico",
+            "type": "image/x-icon",
+            "sizes": "32x32"
+        },
+        {
+            "src": "images/icons/icon_16_16.png",
+            "type": "image/png",
+            "sizes": "16x16"
+        },
+        {
+            "src": "images/icons/icon_32_32.png",
+            "type": "image/png",
+            "sizes": "32x32"
+        },
+        {
+            "src": "images/icons/icon_48_48.png",
+            "type": "image/png",
+            "sizes": "48x48"
+        },
+        {
+            "src": "images/icons/icon_180_180.png",
+            "type": "image/png",
+            "sizes": "180x180"
+        },
+        {
+            "src": "images/icons/icon_192_192.png",
+            "type": "image/png",
+            "sizes": "192x192"
+        },
+        {
+            "src": "images/icons/icon_512_512.png",
+            "type": "image/png",
+            "sizes": "512x512"
+        },
+        {
+            "src": "images/icons/icon_1024_1024.png",
+            "type": "image/png",
+            "sizes": "1024x1024"
+        }
+    ],
+    "start_url": ".",
+    "display": "standalone",
+    "theme_color": "#000000",
+    "background_color": "#ffffff"
+}

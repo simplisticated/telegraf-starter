@@ -9,7 +9,6 @@ import path from "path";
 import { engine } from "express-handlebars";
 import ENV from "../app/env";
 import PATH from "../app/path";
-import { main } from "./api/main";
 import { launchBot } from "./api/bot/launch";
 import { stopBot } from "./api/bot/stop";
 
@@ -38,6 +37,8 @@ function createServerApp() {
     app.set("view engine", "hbs");
     app.set("views", path.join(__dirname, "views"));
 
+    app.use("/", express.static(path.join(__dirname, "public")));
+
     if (ENV.LOG_SERVER_REQUESTS) {
         app.use((request, response, next) => {
             const report = [
@@ -56,9 +57,6 @@ function createServerApp() {
     }
 
     // API
-    app.get("/", main);
-    app.get("/bot/launch", launchBot);
-    app.get("/bot/stop", stopBot);
     app.get("/main", (request, response) => {
         response.render("pages/main", {
             data: {
@@ -66,6 +64,8 @@ function createServerApp() {
             },
         });
     });
+    app.get("/api/bot/launch", launchBot);
+    app.get("/api/bot/stop", stopBot);
 
     // 404
     app.use((request, response) => response.status(404).send("Not found."));
