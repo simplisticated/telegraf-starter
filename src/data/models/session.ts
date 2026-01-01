@@ -30,11 +30,11 @@ export default class SessionModel {
         type: "datetime",
         nullable: true,
     })
-    updated?: Date;
+    updated!: Date | null;
 
     @Column({
         type: "json",
         nullable: true,
     })
-    state?: any;
+    state!: any;
 }

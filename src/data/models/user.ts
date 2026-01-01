@@ -29,7 +29,7 @@ export default class UserModel {
         type: "datetime",
         nullable: true,
     })
-    updated?: Date;
+    updated!: Date | null;
 
     @Column({
         type: "boolean",

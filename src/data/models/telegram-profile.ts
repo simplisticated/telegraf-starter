@@ -25,7 +25,7 @@ export default class TelegramProfileModel {
         type: "datetime",
         nullable: true,
     })
-    updated?: Date;
+    updated!: Date | null;
 
     @Column({
         type: "text",
@@ -50,19 +50,19 @@ export default class TelegramProfileModel {
         type: "text",
         nullable: true,
     })
-    last_name?: string;
+    last_name!: string | null;
 
     @Column({
         type: "text",
         nullable: true,
     })
-    username?: string;
+    username!: string | null;
 
     @Column({
         type: "text",
         nullable: true,
     })
-    language_code?: string;
+    language_code!: string | null;
 
     @Column({
         type: "boolean",

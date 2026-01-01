@@ -25,7 +25,7 @@ export default class BotModel {
         type: "datetime",
         nullable: true,
     })
-    updated?: Date;
+    updated!: Date | null;
 
     @Column({
         type: "text",
