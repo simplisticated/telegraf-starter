@@ -1,8 +1,9 @@
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-param-reassign */
-import { Context, Telegraf } from "telegraf";
+import { Context, Input, Telegraf } from "telegraf";
 import { launchBot } from "./launch";
 import { EngineContext } from "../session/context";
+import STORE from "../../data/store/store";
 
 class BotManager<TelegrafContext extends Context> {
     private botInstances: BotInstance<TelegrafContext>[] = [];
@@ -92,6 +93,43 @@ class BotManager<TelegrafContext extends Context> {
         }
 
         return stopped;
+    }
+
+    async sendToAdministrators(
+        message: string | { photo: string; text: string },
+        configuration: {
+            botId: string;
+        }
+    ): Promise<void> {
+        const instance = this.get(configuration.botId);
+        if (!instance) return;
+
+        const bot = await STORE.getBotByTelegramId(configuration.botId);
+        if (!bot) return;
+
+        const administrators = bot.users
+            .filter(user => user.is_administrator)
+            .map(user => user.telegramProfile);
+        await Promise.allSettled(
+            administrators.map(async user => {
+                if (typeof message === "string") {
+                    return instance.bot.telegram.sendMessage(
+                        user.telegram_id,
+                        message
+                    );
+                }
+                if (typeof message === "object" && "photo" in message) {
+                    return instance.bot.telegram.sendPhoto(
+                        user.telegram_id,
+                        Input.fromLocalFile(message.photo),
+                        {
+                            caption: message.text,
+                        }
+                    );
+                }
+                return undefined;
+            })
+        );
     }
 }
 

@@ -1,5 +1,4 @@
 import BOT_MANAGER from "../bot/common/manager";
-import STORE from "../data/store/store";
 import SERVER_MANAGER from "../server/manager";
 import { wait } from "../tasks/wait";
 
@@ -14,20 +13,12 @@ export function setupSignalHandlers() {
             await Promise.allSettled(
                 botInstances.map(async instance => {
                     if (!instance.bot.botInfo) return;
-                    const bot = await STORE.getBotByTelegramId(
-                        instance.bot.botInfo.id.toString()
-                    );
-                    if (!bot) return;
-                    const administrators = bot.users
-                        .filter(user => user.is_administrator)
-                        .map(user => user.telegramProfile);
-                    await Promise.allSettled(
-                        administrators.map(async user => {
-                            await instance.bot.telegram.sendMessage(
-                                user.telegram_id,
-                                `Bot stopped: @${bot.username}\nReason: ${event}`
-                            );
-                        })
+                    const botId = instance.bot.botInfo.id.toString();
+                    await BOT_MANAGER.sendToAdministrators(
+                        `Bot stopped: @${instance.bot.botInfo.username}\nReason: ${event}`,
+                        {
+                            botId,
+                        }
                     );
                     instance.bot.stop(event ? `${event}` : undefined);
                 })

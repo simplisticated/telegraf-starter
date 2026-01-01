@@ -1,4 +1,5 @@
 import STORE from "../../../data/store/store";
+import BOT_MANAGER from "../../common/manager";
 import { getUserDescription } from "../../common/users";
 import { EngineContext } from "../../session/context";
 
@@ -22,7 +23,11 @@ export default async function telegramProfileData(
 
     if (telegramProfileResult.isNewTelegramProfile) {
         const userDescription = getUserDescription(sender);
-        console.log(`New user: ${userDescription}`);
+        const message = `New user: ${userDescription}`;
+        console.log(message);
+        await BOT_MANAGER.sendToAdministrators(message, {
+            botId: context.botInfo.id.toString(),
+        });
     }
 
     // Here you can implement sending user information to the backend or analytics.
