@@ -11,7 +11,7 @@ async function start(): Promise<boolean> {
     const duration = await getDuration(async () => {
         initializeConsole();
         await initializeDatabase();
-        initializeFolderStructure();
+        await initializeFolderStructure();
         await initializeBots();
         await initializeServer();
         setupSignalHandlers();
