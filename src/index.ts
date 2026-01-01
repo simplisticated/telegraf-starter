@@ -4,10 +4,12 @@ import ENV from "./app/env";
 import { setupConsole } from "./app/console";
 import { createBot } from "./bot/common/create";
 import PATH from "./app/path";
-import { launchServer } from "./server/launch";
+import { startListening } from "./server/launch";
 import BOT_MANAGER from "./bot/common/manager";
 import { getLocalBaseUrl, getPublicBaseUrl } from "./app/base-url";
-import { getDuration } from "./tasks/wait";
+import { getDuration, wait } from "./tasks/wait";
+import { createServer } from "./server/create";
+import SERVER_MANAGER from "./server/manager";
 
 function initializeConsole() {
     setupConsole({
@@ -50,9 +52,12 @@ async function initializeBots() {
 
 async function initializeServer() {
     console.log(`Starting server`);
-    const serverLaunched = await launchServer({
-        port: ENV.SERVER_PORT,
+    const server = await createServer({
         useHttps: ENV.USE_HTTPS,
+    });
+    server.addListener("error", console.error);
+    const serverLaunched = await startListening(server, {
+        port: ENV.SERVER_PORT,
     });
     if (serverLaunched) {
         const publicBaseUrl = getPublicBaseUrl();
@@ -75,6 +80,45 @@ async function initializeServer() {
         ].join("\n");
         console.log(output);
     }
+    SERVER_MANAGER.add("api", server);
+}
+
+function setupSignalHandlers() {
+    ["SIGINT", "SIGTERM", "SIGQUIT"].forEach((event: any) => {
+        process.once(event, async () => {
+            console.log(`Получил сигнал ${event}`);
+            console.log(`Уведомляем администраторов ботов...`);
+            const botInstances = BOT_MANAGER.getAll().filter(
+                instance => instance.state.isActive
+            );
+            await Promise.allSettled(
+                botInstances.map(async instance => {
+                    if (!instance.bot.botInfo) return;
+                    const bot = await STORE.getBotByTelegramId(
+                        instance.bot.botInfo.id.toString()
+                    );
+                    if (!bot) return;
+                    const administrators = bot.users
+                        .filter(user => user.is_administrator)
+                        .map(user => user.telegramProfile);
+                    await Promise.allSettled(
+                        administrators.map(async user => {
+                            await instance.bot.telegram.sendMessage(
+                                user.telegram_id,
+                                `Bot stopped: @${bot.username}\nReason: ${event}`
+                            );
+                        })
+                    );
+                    instance.bot.stop(event ? `${event}` : undefined);
+                })
+            );
+            console.log(`Закрываем все соединения...`);
+            await SERVER_MANAGER.close();
+            console.log(`Завершаем процесс`);
+            await wait(1000);
+            process.exit();
+        });
+    });
 }
 
 async function start(): Promise<boolean> {
@@ -84,6 +128,7 @@ async function start(): Promise<boolean> {
         initializeFolderStructure();
         await initializeBots();
         await initializeServer();
+        setupSignalHandlers();
     });
     console.log(
         `Launched everything in ${(duration / 1000).toFixed(3)} seconds`

@@ -1,30 +1,22 @@
 import http from "http";
 import https from "https";
-import { createServer } from "./create";
 
-async function startListening(
+export async function startListening(
     server: http.Server | https.Server,
-    port: number
+    configuration: {
+        port: number;
+    }
 ): Promise<boolean> {
     return new Promise(resolve => {
-        server
-            .listen(port, undefined, undefined, () => {
-                resolve(true);
-            })
-            .on("error", error => {
-                console.error("Server failed to start:", error);
-                resolve(false);
-            });
+        const errorHandler = (err: Error) => {
+            console.error("Server failed to start:", err);
+            server.removeListener("error", errorHandler);
+            resolve(false);
+        };
+        server.on("error", errorHandler);
+        server.listen(configuration.port, () => {
+            server.removeListener("error", errorHandler);
+            resolve(true);
+        });
     });
-}
-
-export async function launchServer(configuration: {
-    port: number;
-    useHttps: boolean;
-}): Promise<boolean> {
-    const server = await createServer({
-        useHttps: configuration.useHttps,
-    });
-    server.addListener("error", console.error);
-    return startListening(server, configuration.port);
 }
