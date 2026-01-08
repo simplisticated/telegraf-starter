@@ -20,14 +20,7 @@ export default class Queue {
         this._state = value;
     }
 
-    constructor(
-        private configuration: {
-            timeIntervalBetweenIterations: number;
-            numberOfTasksToRunDuringIteration: number;
-            start?: "immediately" | "when-added-first-block";
-            taskTimeout?: number;
-        }
-    ) {
+    constructor(private configuration: QueueConfiguration) {
         if (this.configuration.start === "immediately") {
             this.start();
         }
@@ -66,7 +59,7 @@ export default class Queue {
 
             if (
                 this.state === "pending" &&
-                this.configuration.start === "when-added-first-block"
+                this.configuration.start === "when-added-first-task"
             ) {
                 this.start();
             }
@@ -201,6 +194,15 @@ export default class Queue {
         this.updateHandlers.forEach(container => container.handler(blockCount));
     }
 }
+
+type QueueStart = "immediately" | "when-added-first-task";
+
+type QueueConfiguration = {
+    timeIntervalBetweenIterations: number;
+    numberOfTasksToRunDuringIteration: number;
+    start?: QueueStart;
+    taskTimeout?: number;
+};
 
 type Task<Result> = () => Promise<Result>;
 

@@ -4,23 +4,18 @@ export const QUEUE_INSTANCES = {
     database: new Queue({
         timeIntervalBetweenIterations: 50,
         numberOfTasksToRunDuringIteration: 1,
-        start: "immediately",
+        start: "when-added-first-task",
     }),
     incomingTelegramUpdate: new Queue({
         timeIntervalBetweenIterations: 50,
         numberOfTasksToRunDuringIteration: 1,
-        start: "immediately",
+        start: "when-added-first-task",
         taskTimeout: 60_000,
-    }),
-    outgoingMessage: new Queue({
-        timeIntervalBetweenIterations: 50,
-        numberOfTasksToRunDuringIteration: 1,
-        start: "immediately",
     }),
     telegramApiRequest: new Queue({
         timeIntervalBetweenIterations: 50,
         numberOfTasksToRunDuringIteration: 1,
-        start: "immediately",
+        start: "when-added-first-task",
     }),
 };
 
