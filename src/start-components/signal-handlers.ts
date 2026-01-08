@@ -1,6 +1,6 @@
 import BOT_MANAGER from "../bot/common/manager";
 import SERVER_MANAGER from "../server/manager";
-import { getAllQueueInstances } from "../tasks/instances";
+import { QUEUE_INSTANCES } from "../tasks/instances";
 import { wait } from "../tasks/wait";
 
 export function setupSignalHandlers() {
@@ -10,12 +10,6 @@ export function setupSignalHandlers() {
 
             const botInstances = BOT_MANAGER.getAll().filter(
                 instance => instance.state.isActive
-            );
-            const queueInstances = getAllQueueInstances();
-
-            console.log(`Останавливаем очереди задач...`);
-            await Promise.allSettled(
-                queueInstances.map(async instance => instance.stop())
             );
 
             console.log(`Закрываем ботов...`);
@@ -37,10 +31,15 @@ export function setupSignalHandlers() {
                 })
             );
 
+            console.log(`Останавливаем очередь задач...`);
+            await QUEUE_INSTANCES.incomingTelegramUpdate.waitTillBlockCount(0);
+            QUEUE_INSTANCES.incomingTelegramUpdate.stop();
+
             console.log(`Закрываем все соединения...`);
             await SERVER_MANAGER.close();
 
             console.log(`Завершаем процесс`);
+            await QUEUE_INSTANCES.database.waitTillBlockCount(0);
             await wait(1000);
             process.exit();
         });

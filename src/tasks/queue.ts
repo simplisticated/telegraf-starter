@@ -152,20 +152,15 @@ export default class Queue {
         );
     }
 
-    public currentIteration?: Promise<void>;
-
     async start() {
         this.state = "running";
-        const iteration = this.iteration();
-        this.currentIteration = iteration;
-        await iteration;
-        this.currentIteration = undefined;
+        await this.iteration();
         await wait(this.configuration.timeIntervalBetweenIterations);
-        if (this.state !== "running" || this.currentIteration) return;
+        if (this.state !== "running") return;
         setImmediate(this.start.bind(this));
     }
 
-    async stop() {
+    stop() {
         this.state = "stopped";
     }
 
