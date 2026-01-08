@@ -1,4 +1,4 @@
-import { TELEGRAM_API_REQUEST_QUEUE } from "../../../tasks/instances";
+import { QUEUE_INSTANCES } from "../../../tasks/instances";
 import overrideObjectMethod from "../../../tasks/override";
 import { EngineContext } from "../../session/context";
 
@@ -10,7 +10,7 @@ export default function overrideContextMethods(
         context.telegram,
         "callApi",
         async (source, ...args) => {
-            const result = await TELEGRAM_API_REQUEST_QUEUE.add(() =>
+            const result = await QUEUE_INSTANCES.telegramApiRequest.add(() =>
                 source(...args)
             );
             return result!;

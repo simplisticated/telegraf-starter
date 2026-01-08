@@ -10,13 +10,21 @@ export default class Queue {
 
     private updateHandlers: UpdateHandlerContainer[] = [];
 
-    private started = false;
+    private _state: "pending" | "running" | "stopped" = "pending";
+
+    public get state() {
+        return this._state;
+    }
+
+    private set state(value) {
+        this._state = value;
+    }
 
     constructor(
         private configuration: {
             timeIntervalBetweenIterations: number;
             numberOfTasksToRunDuringIteration: number;
-            start: "immediately" | "when-added-first-block";
+            start?: "immediately" | "when-added-first-block";
             taskTimeout?: number;
         }
     ) {
@@ -57,7 +65,7 @@ export default class Queue {
             this.updatedBlocks();
 
             if (
-                !this.started &&
+                this.state === "pending" &&
                 this.configuration.start === "when-added-first-block"
             ) {
                 this.start();
@@ -66,7 +74,7 @@ export default class Queue {
             if (this.configuration.taskTimeout) {
                 setTimeout(() => {
                     if (!container.isHandled) {
-                        this.remove(container.id);
+                        this.removeTask(container.id);
                         resolve({
                             value: undefined,
                             error: new Error("Timeout"),
@@ -90,7 +98,13 @@ export default class Queue {
         return result.value!;
     }
 
-    private remove(taskId: string) {
+    private getTask(taskId: string): Task<any> | null {
+        return (
+            this.tasks.find(container => container.id === taskId)?.task ?? null
+        );
+    }
+
+    private removeTask(taskId: string) {
         const index = this.tasks.findIndex(el => el.id === taskId);
 
         if (index >= 0 && index < this.tasks.length) {
@@ -132,16 +146,22 @@ export default class Queue {
                     taskContainer.completion(null, error);
                     console.error(error);
                 } finally {
-                    this.remove(taskContainer.id);
+                    this.removeTask(taskContainer.id);
                 }
             })
         );
     }
 
-    private async start() {
+    async start() {
+        this.state = "running";
         await this.iteration();
         await wait(this.configuration.timeIntervalBetweenIterations);
+        if (this.state !== "running") return;
         setImmediate(this.start.bind(this));
+    }
+
+    stop() {
+        this.state = "stopped";
     }
 
     subscribe(handler: UpdateHandler): string {
