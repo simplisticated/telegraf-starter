@@ -152,15 +152,20 @@ export default class Queue {
         );
     }
 
+    public currentIteration?: Promise<void>;
+
     async start() {
         this.state = "running";
-        await this.iteration();
+        const iteration = this.iteration();
+        this.currentIteration = iteration;
+        await iteration;
+        this.currentIteration = undefined;
         await wait(this.configuration.timeIntervalBetweenIterations);
-        if (this.state !== "running") return;
+        if (this.state !== "running" || this.currentIteration) return;
         setImmediate(this.start.bind(this));
     }
 
-    stop() {
+    async stop() {
         this.state = "stopped";
     }
 
@@ -181,7 +186,7 @@ export default class Queue {
         }
     }
 
-    async waitTillBlockCount(requiredBlockCount: number): Promise<void> {
+    waitTillBlockCount(requiredBlockCount: number): Promise<void> {
         return new Promise(resolve => {
             if (this.tasks.length === requiredBlockCount) {
                 resolve();
