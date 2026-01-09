@@ -26,6 +26,10 @@ export class Store {
         }
     }
 
+    get isInitialized() {
+        return this.configuration.dataSource.isInitialized;
+    }
+
     async getUsers(where?: FindOptionsWhere<UserModel>): Promise<UserModel[]> {
         try {
             return await this.configuration.dataSource

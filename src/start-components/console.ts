@@ -7,10 +7,12 @@ export function initializeConsole() {
         outputTimestamp: true,
         timezone: ENV.LOG_TIMEZONE,
         handleMessage: async (message, level) => {
-            await STORE.createLog({
-                level,
-                message: message ?? "",
-            });
+            if (STORE.isInitialized) {
+                await STORE.createLog({
+                    level,
+                    message: message ?? "",
+                });
+            }
 
             // Здесь можно реализовать отправку сообщений в бэкенд. Пример:
             // if (level === "error") send(message)
