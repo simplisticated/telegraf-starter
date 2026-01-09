@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import { v4 as uuidv4 } from "uuid";
 import { wait } from "./wait";
 
@@ -45,7 +46,7 @@ export default class Queue {
                 id: uuidv4(),
                 key,
                 task,
-                isHandled: false,
+                state: "queued",
                 completion: (result, error) => {
                     resolve({
                         value: result,
@@ -65,8 +66,8 @@ export default class Queue {
             }
 
             if (this.configuration.taskTimeout) {
-                setTimeout(() => {
-                    if (!container.isHandled) {
+                container.timeoutId = setTimeout(() => {
+                    if (container.state === "queued") {
                         this.removeTask(container.id);
                         resolve({
                             value: undefined,
@@ -107,23 +108,24 @@ export default class Queue {
     }
 
     private async iteration() {
-        const { numberOfTasksToRunDuringIteration } = this.configuration;
-
         if (!this.tasks.length) return;
+
+        const { numberOfTasksToRunDuringIteration } = this.configuration;
         if (numberOfTasksToRunDuringIteration <= 0) return;
 
-        const containers: TaskContainer<any>[] = [];
+        const selectedContainers: TaskContainer<any>[] = [];
         const usedKeys = new Set<string>();
 
         // eslint-disable-next-line no-restricted-syntax
         for (const container of this.tasks) {
-            if (containers.length >= numberOfTasksToRunDuringIteration) {
+            if (
+                selectedContainers.length >= numberOfTasksToRunDuringIteration
+            ) {
                 break;
             }
 
             if (!container.key || !usedKeys.has(container.key)) {
-                container.isHandled = true;
-                containers.push(container);
+                selectedContainers.push(container);
                 if (container.key) {
                     usedKeys.add(container.key);
                 }
@@ -131,11 +133,18 @@ export default class Queue {
         }
 
         await Promise.allSettled(
-            containers.map(async taskContainer => {
+            selectedContainers.map(async taskContainer => {
+                if (taskContainer.timeoutId) {
+                    clearTimeout(taskContainer.timeoutId);
+                    taskContainer.timeoutId = undefined;
+                }
                 try {
+                    taskContainer.state = "running";
                     const result = await taskContainer.task();
+                    taskContainer.state = "finished";
                     taskContainer.completion(result, null);
                 } catch (error) {
+                    taskContainer.state = "error";
                     taskContainer.completion(null, error);
                     console.error(error);
                 } finally {
@@ -206,11 +215,14 @@ type QueueConfiguration = {
 
 type Task<Result> = () => Promise<Result>;
 
+type TaskState = "queued" | "running" | "finished" | "error";
+
 type TaskContainer<Result> = {
     id: string;
     key?: string;
     task: Task<Result>;
-    isHandled: boolean;
+    state: TaskState;
+    timeoutId?: NodeJS.Timeout;
     completion: (result?: Result, error?: any) => void;
 };
 
