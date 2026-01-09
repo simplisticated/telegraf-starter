@@ -1,3 +1,4 @@
+import { UserCommand } from "../../common/commands";
 import { isPrivate } from "../../common/context";
 import { parseCommand } from "../../common/message";
 import { EngineContext } from "../../session/context";
@@ -15,7 +16,7 @@ export default function privateCommand(
     if (!data) return next();
 
     switch (data.command) {
-        case "start": {
+        case UserCommand.start: {
             return context.scene.enter("start-scene");
         }
         default: {
