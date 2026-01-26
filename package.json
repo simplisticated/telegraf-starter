@@ -29,7 +29,7 @@
         "reflect-metadata": "0.1.14",
         "sqlite3": "5.1.6",
         "telegraf": "4.16.3",
-        "typeorm": "^0.3.28",
+        "typeorm": "0.3.28",
         "uuid": "8.3.2"
     },
     "devDependencies": {
