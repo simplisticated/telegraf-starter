@@ -59,7 +59,7 @@ To extend functionality of the bot:
     when needed.
 
 To extend functionality of the server, add new
-[endpoints](./src/server/api/main.ts).
+[endpoints](./src/server/create.ts).
 
 ## Environment Variables
 
