@@ -27,9 +27,9 @@
         "handlebars": "4.7.8",
         "helmet": "8.1.0",
         "reflect-metadata": "0.1.14",
-        "sqlite3": "5.1.6",
+        "sqlite3": "6.0.1",
         "telegraf": "4.16.3",
-        "typeorm": "0.3.28",
+        "typeorm": "1.0.0",
         "uuid": "8.3.2"
     },
     "devDependencies": {
