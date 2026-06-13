@@ -24,7 +24,7 @@
         "dotenv": "16.3.1",
         "express": "5.1.0",
         "express-handlebars": "8.0.4",
-        "handlebars": "4.7.8",
+        "handlebars": "4.7.9",
         "helmet": "8.1.0",
         "reflect-metadata": "0.1.14",
         "sqlite3": "5.1.6",
