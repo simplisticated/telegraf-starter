@@ -1,7 +1,9 @@
 # Telegraf.js Starter
 
-Telegram bot starter with Telegraf.js and TypeScript. Includes the following
-features and tools:
+This project is a production-oriented foundation for Telegram bots - with the
+infrastructure that most starters leave for you to build.
+
+Includes the following features and tools:
 
 -   TypeScript
 -   Express
